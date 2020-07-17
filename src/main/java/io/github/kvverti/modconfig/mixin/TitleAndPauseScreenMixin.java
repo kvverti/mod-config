@@ -29,6 +29,6 @@ public abstract class TitleAndPauseScreenMixin extends Screen {
         )
     )
     private Screen replaceOptionsWithModConfigOptionsScreen(Screen screen) {
-        return new ModOptionsScreen();
+        return new ModOptionsScreen(this);
     }
 }
