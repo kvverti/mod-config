@@ -4,7 +4,7 @@
   "package": "io.github.kvverti.modconfig.mixin",
   "compatibilityLevel": "JAVA_8",
   "client": [
-    "ExampleMixin"
+    "TitleAndPauseScreenMixin"
   ],
   "injectors": {
     "defaultRequire": 1
