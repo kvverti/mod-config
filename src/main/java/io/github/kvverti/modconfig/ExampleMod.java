@@ -1,4 +1,4 @@
-package net.fabricmc.example;
+package io.github.kvverti.modconfig;
 
 import net.fabricmc.api.ModInitializer;
 

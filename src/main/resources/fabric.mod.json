@@ -1,29 +1,29 @@
 {
   "schemaVersion": 1,
-  "id": "modid",
+  "id": "modconfig",
   "version": "${version}",
 
-  "name": "Example Mod",
-  "description": "This is an example description! Tell everyone what your mod is about!",
+  "name": "Mod Config",
+  "description": "A simple, global, searchable mod config screen.",
   "authors": [
-    "Me!"
+    "kwerti"
   ],
   "contact": {
-    "homepage": "https://fabricmc.net/",
-    "sources": "https://github.com/FabricMC/fabric-example-mod"
+    "homepage": "https://github.com/kvverti/mod-config",
+    "sources": "https://github.com/kvverti/mod-config"
   },
 
-  "license": "CC0-1.0",
-  "icon": "assets/modid/icon.png",
+  "license": "MIT",
+  "icon": "assets/modconfig/icon.png",
 
-  "environment": "*",
+  "environment": "client",
   "entrypoints": {
     "main": [
-      "net.fabricmc.example.ExampleMod"
+      "io.github.kvverti.modconfig.ExampleMod"
     ]
   },
   "mixins": [
-    "modid.mixins.json"
+    "modconfig.mixins.json"
   ],
 
   "depends": {
