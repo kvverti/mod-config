@@ -1,6 +1,7 @@
 package io.github.kvverti.modconfig.screen;
 
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.options.OptionsScreen;
 import net.minecraft.client.gui.widget.AlwaysSelectedEntryListWidget;
@@ -73,7 +74,7 @@ public class ModOptionsScreen extends Screen {
             new TranslatableText("gui.done"),
             btn -> this.onClose()
         ));
-        this.entries = this.addChild(new EntryList(this.client, this.width, this.height, 50, this.height - 32, 30));
+        this.entries = this.addChild(new EntryList(this.client, this.width, this.height, 50, this.height - 32, STANDARD_HEIGHT + PADDING_H));
     }
 
     @Override
@@ -85,6 +86,11 @@ public class ModOptionsScreen extends Screen {
         modConfigSettings.render(matrices, mouseX, mouseY, delta);
         doneBtn.render(matrices, mouseX, mouseY, delta);
         super.render(matrices, mouseX, mouseY, delta);
+    }
+
+    @Override
+    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+        return super.keyPressed(keyCode, scanCode, modifiers);
     }
 
     @Override
@@ -101,8 +107,9 @@ public class ModOptionsScreen extends Screen {
 
         public EntryList(MinecraftClient minecraftClient, int width, int height, int top, int bottom, int itemHeight) {
             super(minecraftClient, width, height, top, bottom, itemHeight);
-            for(int ii = 0; ii < 11; ii++) {
-                this.addEntry(new ModOptionsEntry(new ButtonWidget(
+            this.addEntry(new LabelModOptionsEntry(ModOptionsScreen.this.textRenderer, new LiteralText("Label 1")));
+            for(int ii = 0; ii < 5; ii++) {
+                this.addEntry(new SettingsModOptionsEntry(new ButtonWidget(
                     30,
                     30,
                     150,
@@ -116,13 +123,39 @@ public class ModOptionsScreen extends Screen {
                     STANDARD_HEIGHT,
                     new LiteralText("Minecraft"),
                     btn -> this.client.openScreen(new OptionsScreen(ModOptionsScreen.this, this.client.options))
-                )));
+                ), ModOptionsScreen.this.textRenderer.isRightToLeft()));
             }
+            this.addEntry(new LabelModOptionsEntry(ModOptionsScreen.this.textRenderer, new LiteralText("Label 2")));
+            for(int ii = 0; ii < 3; ii++) {
+                this.addEntry(new SettingsModOptionsEntry(new ButtonWidget(
+                    30,
+                    30,
+                    150,
+                    STANDARD_HEIGHT,
+                    new LiteralText("Minecraft"),
+                    btn -> this.client.openScreen(new OptionsScreen(ModOptionsScreen.this, this.client.options))
+                ), new ButtonWidget(
+                    30,
+                    30,
+                    150,
+                    STANDARD_HEIGHT,
+                    new LiteralText("Minecraft"),
+                    btn -> this.client.openScreen(new OptionsScreen(ModOptionsScreen.this, this.client.options))
+                ), ModOptionsScreen.this.textRenderer.isRightToLeft()));
+            }
+            this.addEntry(new SettingsModOptionsEntry(new ButtonWidget(
+                30,
+                30,
+                150,
+                STANDARD_HEIGHT,
+                new LiteralText("Minecraft"),
+                btn -> this.client.openScreen(new OptionsScreen(ModOptionsScreen.this, this.client.options))
+            ), null, ModOptionsScreen.this.textRenderer.isRightToLeft()));
         }
 
         @Override
         protected int getScrollbarPositionX() {
-            return this.width - 10;
+            return (this.width / 2) + (ROW_WIDTH / 2) + PADDING_H;
         }
 
         @Override
@@ -139,35 +172,44 @@ public class ModOptionsScreen extends Screen {
         public boolean changeFocus(boolean lookForwards) {
             if(entryIdx == -1) {
                 entryIdx = lookForwards ? 0 : this.getItemCount() - 1;
-                ModOptionsEntry entry = this.getEntry(entryIdx);
-                entry.changeFocus(lookForwards);
-                this.centerScrollOn(entry);
-            } else {
-                ModOptionsEntry entry = this.getEntry(entryIdx);
-                boolean hasFocus = entry.changeFocus(lookForwards);
-                if(!hasFocus) {
-                    entryIdx += lookForwards ? 1 : -1;
-                    if(entryIdx >= this.getItemCount()) {
-                        entryIdx = -1;
-                    }
-                    if(entryIdx != -1) {
-                        ModOptionsEntry entry1 = this.getEntry(entryIdx);
-                        entry1.changeFocus(lookForwards);
-                        this.centerScrollOn(entry1);
-                    }
+            }
+            ModOptionsEntry entry = this.getEntry(entryIdx);
+            boolean hasFocus = entry.changeFocus(lookForwards);
+            while(!hasFocus && entryIdx != -1) {
+                entryIdx += lookForwards ? 1 : -1;
+                if(entryIdx >= this.getItemCount()) {
+                    entryIdx = -1;
+                }
+                if(entryIdx != -1) {
+                    entry = this.getEntry(entryIdx);
+                    hasFocus = entry.changeFocus(lookForwards);
                 }
             }
+            this.centerScrollOn(entry);
             return entryIdx != -1;
         }
 
         @Override
         public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-            if(!super.keyPressed(keyCode, scanCode, modifiers)) {
+            if(keyCode == 264 || keyCode == 265) {
+                // up/down arrows
+                boolean down = keyCode == 264;
+                if(entryIdx == -1 || changeFocus(down)) {
+                    changeFocus(down);
+                }
+                return true;
+            } else if(keyCode == 262 || keyCode == 263) {
+                // left/right arrows
+                boolean right = keyCode == 262;
+                changeFocus(right);
+                return true;
+            } else if(!super.keyPressed(keyCode, scanCode, modifiers)) {
                 return entryIdx != -1 && this.getEntry(entryIdx).keyPressed(keyCode, scanCode, modifiers);
+            } else {
+                // if the keypress scrolled the selection
+                this.setSelected(null);
+                return false;
             }
-            // if the keypress scrolled the selection
-            this.setSelected(null);
-            return false;
         }
     }
 }
