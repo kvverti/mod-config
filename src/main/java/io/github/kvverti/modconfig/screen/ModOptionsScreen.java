@@ -1,5 +1,7 @@
 package io.github.kvverti.modconfig.screen;
 
+import org.lwjgl.glfw.GLFW;
+
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.options.OptionsScreen;
@@ -172,17 +174,17 @@ public class ModOptionsScreen extends Screen {
 
         @Override
         public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-            if(keyCode == 264 || keyCode == 265) {
+            if(keyCode == GLFW.GLFW_KEY_DOWN || keyCode == GLFW.GLFW_KEY_UP) {
                 // up/down arrows
-                boolean down = keyCode == 264;
+                boolean down = keyCode == GLFW.GLFW_KEY_DOWN;
                 if(entryIdx == -1 || changeFocus(down)) {
                     changeFocus(down);
                 }
                 return true;
-            } else if(keyCode == 262 || keyCode == 263) {
-                // left/right arrows
-                boolean right = keyCode == 262;
-                changeFocus(right);
+            } else if(keyCode == GLFW.GLFW_KEY_RIGHT || keyCode == GLFW.GLFW_KEY_LEFT) {
+                // left/right arrows (RTL is left-forward, LTR is right-forward)
+                boolean forward = keyCode == (ModOptionsScreen.this.textRenderer.isRightToLeft() ? GLFW.GLFW_KEY_LEFT : GLFW.GLFW_KEY_RIGHT);
+                changeFocus(forward);
                 return true;
             } else if(!super.keyPressed(keyCode, scanCode, modifiers)) {
                 return entryIdx != -1 && this.getEntry(entryIdx).keyPressed(keyCode, scanCode, modifiers);
