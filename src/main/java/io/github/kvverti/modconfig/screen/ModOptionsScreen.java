@@ -1,7 +1,6 @@
 package io.github.kvverti.modconfig.screen;
 
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.options.OptionsScreen;
 import net.minecraft.client.gui.widget.AlwaysSelectedEntryListWidget;
@@ -23,21 +22,6 @@ public class ModOptionsScreen extends Screen {
     private final Screen parent;
 
     /**
-     * Search text field.
-     */
-    private TextFieldWidget searchField;
-
-    /**
-     * Button for the ModConfig settings screen
-     */
-    private ButtonWidget modConfigSettings;
-
-    /**
-     * Done button.
-     */
-    private ButtonWidget doneBtn;
-
-    /**
      * Search entries.
      */
     private EntryList entries;
@@ -50,15 +34,15 @@ public class ModOptionsScreen extends Screen {
     @Override
     protected void init() {
         super.init();
-        this.searchField = this.addChild(new TextFieldWidget(
+        TextFieldWidget searchField = this.addButton(new TextFieldWidget(
             this.textRenderer,
             (this.width / 2) - (ROW_WIDTH / 2),
             20,
             SEARCH_FIELD_WIDTH,
             STANDARD_HEIGHT,
             new TranslatableText("modconfig.search")));
-        this.modConfigSettings = this.addButton(new ButtonWidget(
-            this.searchField.x + SEARCH_FIELD_WIDTH + PADDING_H,
+        this.addButton(new ButtonWidget(
+            searchField.x + SEARCH_FIELD_WIDTH + PADDING_H,
             20,
             TOP_BUTTON_WIDTH,
             STANDARD_HEIGHT,
@@ -66,7 +50,8 @@ public class ModOptionsScreen extends Screen {
             btn -> {
             }
         ));
-        this.doneBtn = this.addButton(new ButtonWidget(
+        this.entries = this.addChild(new EntryList(this.client, this.width, this.height, 45, this.height - 32, STANDARD_HEIGHT + PADDING_H));
+        this.addButton(new ButtonWidget(
             (this.width / 2) - (DONE_BUTTON_WIDTH / 2),
             this.height - 26,
             DONE_BUTTON_WIDTH,
@@ -74,7 +59,6 @@ public class ModOptionsScreen extends Screen {
             new TranslatableText("gui.done"),
             btn -> this.onClose()
         ));
-        this.entries = this.addChild(new EntryList(this.client, this.width, this.height, 50, this.height - 32, STANDARD_HEIGHT + PADDING_H));
     }
 
     @Override
@@ -82,9 +66,6 @@ public class ModOptionsScreen extends Screen {
         this.renderBackground(matrices);
         entries.render(matrices, mouseX, mouseY, delta);
         this.drawCenteredText(matrices, this.textRenderer, new TranslatableText("modconfig.title"), this.width / 2, 10, 0xffffff);
-        searchField.render(matrices, mouseX, mouseY, delta);
-        modConfigSettings.render(matrices, mouseX, mouseY, delta);
-        doneBtn.render(matrices, mouseX, mouseY, delta);
         super.render(matrices, mouseX, mouseY, delta);
     }
 
