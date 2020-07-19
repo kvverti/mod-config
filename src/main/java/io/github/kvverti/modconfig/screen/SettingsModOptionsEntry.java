@@ -56,6 +56,17 @@ class SettingsModOptionsEntry extends ModOptionsEntry {
         }
     }
 
+    public int getFocusParity() {
+        return (focused == null || focused == button1) ? 0 : 1;
+    }
+
+    public void clearFocus() {
+        if(focused != null && focused.isFocused()) {
+            focused.changeFocus(true);
+        }
+        focused = null;
+    }
+
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
         return focused != null && focused.keyPressed(keyCode, scanCode, modifiers);

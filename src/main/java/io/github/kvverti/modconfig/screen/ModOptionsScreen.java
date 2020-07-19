@@ -3,6 +3,7 @@ package io.github.kvverti.modconfig.screen;
 import org.lwjgl.glfw.GLFW;
 
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.options.OptionsScreen;
 import net.minecraft.client.gui.widget.AlwaysSelectedEntryListWidget;
@@ -28,6 +29,11 @@ public class ModOptionsScreen extends Screen {
      */
     private EntryList entries;
 
+    // saved state
+    private String searchText = "";
+    private double scrollPos = 0.0;
+    private int selectedOptionIdx = -1;
+
     public ModOptionsScreen(Screen parent) {
         super(new TranslatableText("modconfig.narrator.options.title"));
         this.parent = parent;
@@ -43,6 +49,8 @@ public class ModOptionsScreen extends Screen {
             SEARCH_FIELD_WIDTH,
             STANDARD_HEIGHT,
             new TranslatableText("modconfig.search")));
+        searchField.setChangedListener(s -> searchText = s);
+        searchField.setText(searchText);
         this.addButton(new ButtonWidget(
             searchField.x + SEARCH_FIELD_WIDTH + PADDING_H,
             20,
@@ -53,6 +61,7 @@ public class ModOptionsScreen extends Screen {
             }
         ));
         this.entries = this.addChild(new EntryList(this.client, this.width, this.height, 45, this.height - 32, STANDARD_HEIGHT + PADDING_H));
+        this.entries.setScrollAmount(scrollPos);
         this.addButton(new ButtonWidget(
             (this.width / 2) - (DONE_BUTTON_WIDTH / 2),
             this.height - 26,
@@ -61,6 +70,10 @@ public class ModOptionsScreen extends Screen {
             new TranslatableText("gui.done"),
             btn -> this.onClose()
         ));
+        if(selectedOptionIdx != -1) {
+            this.setFocused(entries);
+            entries.setFocusedIndex(selectedOptionIdx);
+        }
     }
 
     @Override
@@ -73,6 +86,15 @@ public class ModOptionsScreen extends Screen {
 
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+        if(keyCode == GLFW.GLFW_KEY_ESCAPE) {
+            // escape the scroll area if possible
+            if(this.getFocused() == entries) {
+                entries.setFocusedIndex(-1);
+                ModOptionsScreen.this.setFocused(null);
+                this.changeFocus(true);
+                return true;
+            }
+        }
         return super.keyPressed(keyCode, scanCode, modifiers);
     }
 
@@ -98,14 +120,14 @@ public class ModOptionsScreen extends Screen {
                     150,
                     STANDARD_HEIGHT,
                     new LiteralText("Minecraft"),
-                    btn -> this.client.openScreen(new OptionsScreen(ModOptionsScreen.this, this.client.options))
+                    btn -> tmpOpenOptionsScreen()
                 ), new ButtonWidget(
                     30,
                     30,
                     150,
                     STANDARD_HEIGHT,
                     new LiteralText("Minecraft"),
-                    btn -> this.client.openScreen(new OptionsScreen(ModOptionsScreen.this, this.client.options))
+                    btn -> tmpOpenOptionsScreen()
                 ), ModOptionsScreen.this.textRenderer.isRightToLeft()));
             }
             this.addEntry(new LabelModOptionsEntry(ModOptionsScreen.this.textRenderer, new LiteralText("Label 2")));
@@ -116,14 +138,14 @@ public class ModOptionsScreen extends Screen {
                     150,
                     STANDARD_HEIGHT,
                     new LiteralText("Minecraft"),
-                    btn -> this.client.openScreen(new OptionsScreen(ModOptionsScreen.this, this.client.options))
+                    btn -> tmpOpenOptionsScreen()
                 ), new ButtonWidget(
                     30,
                     30,
                     150,
                     STANDARD_HEIGHT,
                     new LiteralText("Minecraft"),
-                    btn -> this.client.openScreen(new OptionsScreen(ModOptionsScreen.this, this.client.options))
+                    btn -> tmpOpenOptionsScreen()
                 ), ModOptionsScreen.this.textRenderer.isRightToLeft()));
             }
             this.addEntry(new SettingsModOptionsEntry(new ButtonWidget(
@@ -132,8 +154,41 @@ public class ModOptionsScreen extends Screen {
                 150,
                 STANDARD_HEIGHT,
                 new LiteralText("Minecraft"),
-                btn -> this.client.openScreen(new OptionsScreen(ModOptionsScreen.this, this.client.options))
+                btn -> tmpOpenOptionsScreen()
             ), null, ModOptionsScreen.this.textRenderer.isRightToLeft()));
+        }
+
+        private void tmpOpenOptionsScreen() {
+            ModOptionsScreen.this.scrollPos = this.getScrollAmount();
+            if(entryIdx != -1) {
+                ModOptionsEntry entry = this.getEntry(entryIdx);
+                int parity;
+                if(entry instanceof SettingsModOptionsEntry) {
+                    parity = ((SettingsModOptionsEntry)entry).getFocusParity();
+                } else {
+                    parity = 0;
+                }
+                ModOptionsScreen.this.selectedOptionIdx = 2 * entryIdx + parity;
+            } else {
+                ModOptionsScreen.this.selectedOptionIdx = -1;
+            }
+            this.client.openScreen(new OptionsScreen(ModOptionsScreen.this, this.client.options));
+        }
+
+        public void setFocusedIndex(int idx) {
+            if(idx >= 0 && idx < 2 * this.getItemCount()) {
+                entryIdx = idx / 2;
+                ModOptionsEntry elem = this.getEntry(entryIdx);
+                elem.changeFocus(idx % 2 == 0);
+            } else {
+                if(entryIdx != -1) {
+                    ModOptionsEntry elem = this.getEntry(entryIdx);
+                    if(elem instanceof SettingsModOptionsEntry) {
+                        ((SettingsModOptionsEntry)elem).clearFocus();
+                    }
+                    entryIdx = -1;
+                }
+            }
         }
 
         @Override
