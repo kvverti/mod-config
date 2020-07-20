@@ -10,6 +10,7 @@ import net.minecraft.text.TranslatableText;
 
 public class ModOptionsScreen extends Screen {
 
+    public static final int STANDARD_WIDTH = 150;
     public static final int STANDARD_HEIGHT = 20;
     public static final int TOP_BUTTON_WIDTH = 100;
     public static final int DONE_BUTTON_WIDTH = 150;

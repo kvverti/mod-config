@@ -8,8 +8,8 @@ import io.github.kvverti.modconfig.data.SearchableOptions;
 import org.lwjgl.glfw.GLFW;
 
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.widget.AbstractButtonWidget;
 import net.minecraft.client.gui.widget.AlwaysSelectedEntryListWidget;
-import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.LiteralText;
 
@@ -41,18 +41,10 @@ class ModOptionsEntryList extends AlwaysSelectedEntryListWidget<ModOptionsEntry>
         if(!mods.isEmpty()) {
             this.addEntry(new LabelModOptionsEntry(this.client.textRenderer, new LiteralText("Mods")));
             for(Iterator<ModOption> itr = mods.iterator(); itr.hasNext(); ) {
-                ModOption option = itr.next();
-                ButtonWidget left = new ButtonWidget(
-                    0, 0, 150, ModOptionsScreen.STANDARD_HEIGHT,
-                    option.getOptionName(), btn -> option.onInteract(containingScreen)
-                );
-                ButtonWidget right;
+                AbstractButtonWidget left = itr.next().createWidget(containingScreen, ModOptionsScreen.STANDARD_WIDTH, ModOptionsScreen.STANDARD_HEIGHT);
+                AbstractButtonWidget right;
                 if(itr.hasNext()) {
-                    ModOption option2 = itr.next();
-                    right = new ButtonWidget(
-                        0, 0, 150, ModOptionsScreen.STANDARD_HEIGHT,
-                        option2.getOptionName(), btn -> option2.onInteract(containingScreen)
-                    );
+                    right = itr.next().createWidget(containingScreen, ModOptionsScreen.STANDARD_WIDTH, ModOptionsScreen.STANDARD_HEIGHT);
                 } else {
                     right = null;
                 }

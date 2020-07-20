@@ -1,6 +1,7 @@
 package io.github.kvverti.modconfig.data;
 
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.widget.AbstractButtonWidget;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
@@ -12,11 +13,11 @@ public abstract class ModOption {
         this.optionName = optionName;
     }
 
-    public Text getOptionName() {
+    public final Text getOptionName() {
         return optionName;
     }
 
-    public String getLocalizedOptionName() {
+    public final String getLocalizedOptionName() {
         if(optionName instanceof TranslatableText) {
             return I18n.translate(((TranslatableText)optionName).getKey());
         } else {
@@ -24,5 +25,5 @@ public abstract class ModOption {
         }
     }
 
-    public abstract void onInteract(Screen parent);
+    public abstract AbstractButtonWidget createWidget(Screen containing, int width, int height);
 }
