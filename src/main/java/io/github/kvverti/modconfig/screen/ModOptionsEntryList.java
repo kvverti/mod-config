@@ -2,8 +2,8 @@ package io.github.kvverti.modconfig.screen;
 
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
+import io.github.kvverti.modconfig.data.NestedScreenModOption;
 import io.github.kvverti.modconfig.data.ScreenFactory;
 import io.github.kvverti.modconfig.data.SearchableOptions;
 import org.lwjgl.glfw.GLFW;
@@ -27,34 +27,34 @@ class ModOptionsEntryList extends AlwaysSelectedEntryListWidget<ModOptionsEntry>
     public ModOptionsEntryList(ModOptionsScreen containingScreen, MinecraftClient minecraftClient, int width, int height, int top, int bottom, int itemHeight) {
         super(minecraftClient, width, height, top, bottom, itemHeight);
         this.containingScreen = containingScreen;
-        List<Map.Entry<String, ScreenFactory>> mods = allOptions.findMods("");
+        List<NestedScreenModOption> mods = allOptions.findMods("");
         addMods(mods);
     }
 
     public void search(String match) {
         entryIdx = -1;
         this.clearEntries();
-        List<Map.Entry<String, ScreenFactory>> mods = allOptions.findMods(match);
+        List<NestedScreenModOption> mods = allOptions.findMods(match);
         addMods(mods);
     }
 
-    private void addMods(List<Map.Entry<String, ScreenFactory>> mods) {
+    private void addMods(List<NestedScreenModOption> mods) {
         if(!mods.isEmpty()) {
             this.addEntry(new LabelModOptionsEntry(this.client.textRenderer, new LiteralText("Mods")));
-            for(Iterator<Map.Entry<String, ScreenFactory>> itr = mods.iterator(); itr.hasNext(); ) {
-                Map.Entry<String, ScreenFactory> entry = itr.next();
-                ScreenFactory factory = entry.getValue();
+            for(Iterator<NestedScreenModOption> itr = mods.iterator(); itr.hasNext(); ) {
+                NestedScreenModOption option = itr.next();
+                ScreenFactory factory = option.getFactory();
                 ButtonWidget left = new ButtonWidget(
                     0, 0, 150, ModOptionsScreen.STANDARD_HEIGHT,
-                    new LiteralText(entry.getKey()), btn -> this.client.openScreen(factory.create(containingScreen))
+                    option.getOptionName(), btn -> this.client.openScreen(factory.create(containingScreen))
                 );
                 ButtonWidget right;
                 if(itr.hasNext()) {
-                    entry = itr.next();
-                    ScreenFactory factory2 = entry.getValue();
+                    option = itr.next();
+                    ScreenFactory factory2 = option.getFactory();
                     right = new ButtonWidget(
                         0, 0, 150, ModOptionsScreen.STANDARD_HEIGHT,
-                        new LiteralText(entry.getKey()), btn -> this.client.openScreen(factory2.create(containingScreen))
+                        option.getOptionName(), btn -> this.client.openScreen(factory2.create(containingScreen))
                     );
                 } else {
                     right = null;
