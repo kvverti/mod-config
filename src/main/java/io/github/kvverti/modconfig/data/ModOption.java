@@ -1,5 +1,6 @@
 package io.github.kvverti.modconfig.data;
 
+import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
@@ -22,4 +23,6 @@ public abstract class ModOption {
             return optionName.asString();
         }
     }
+
+    public abstract void onInteract(Screen parent);
 }

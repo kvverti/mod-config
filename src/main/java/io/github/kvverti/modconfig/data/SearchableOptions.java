@@ -16,7 +16,7 @@ public class SearchableOptions {
     /**
      * Mod options screens.
      */
-    private final List<NestedScreenModOption> mods = new ArrayList<>();
+    private final List<ModOption> mods = new ArrayList<>();
 
     public SearchableOptions() {
         MinecraftClient client = MinecraftClient.getInstance();
@@ -28,12 +28,12 @@ public class SearchableOptions {
     /**
      * Finds and returns all mods whose names match the given query.
      */
-    public List<NestedScreenModOption> findMods(String match) {
-        List<NestedScreenModOption> found = new ArrayList<>();
+    public List<ModOption> findMods(String match) {
+        List<ModOption> found = new ArrayList<>();
         String localeStr = MinecraftClient.getInstance().getLanguageManager().getLanguage().getCode();
         Locale locale = Locale.forLanguageTag(localeStr.replace("_", "-"));
         match = match.toLowerCase(locale);
-        for(NestedScreenModOption option : mods) {
+        for(ModOption option : mods) {
             if(option.getLocalizedOptionName().toLowerCase(locale).contains(match)) {
                 found.add(option);
             }
