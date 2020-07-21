@@ -135,7 +135,9 @@ class ModOptionsEntryList extends AlwaysSelectedEntryListWidget<ModOptionsEntry>
 
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        if(keyCode == GLFW.GLFW_KEY_DOWN || keyCode == GLFW.GLFW_KEY_UP) {
+        if(entryIdx != -1 && this.getEntry(entryIdx).keyPressed(keyCode, scanCode, modifiers)) {
+            return true;
+        } else if(keyCode == GLFW.GLFW_KEY_DOWN || keyCode == GLFW.GLFW_KEY_UP) {
             // up/down arrows
             boolean down = keyCode == GLFW.GLFW_KEY_DOWN;
             if(entryIdx == -1) {
@@ -152,8 +154,6 @@ class ModOptionsEntryList extends AlwaysSelectedEntryListWidget<ModOptionsEntry>
             boolean forward = keyCode == (this.client.textRenderer.isRightToLeft() ? GLFW.GLFW_KEY_LEFT : GLFW.GLFW_KEY_RIGHT);
             changeFocus(forward);
             return true;
-        } else if(!super.keyPressed(keyCode, scanCode, modifiers)) {
-            return entryIdx != -1 && this.getEntry(entryIdx).keyPressed(keyCode, scanCode, modifiers);
         } else {
             // if the keypress scrolled the selection
             this.setSelected(null);
@@ -166,5 +166,10 @@ class ModOptionsEntryList extends AlwaysSelectedEntryListWidget<ModOptionsEntry>
         boolean ret = super.mouseScrolled(mouseX, mouseY, amount);
         saveScreenState();
         return ret;
+    }
+
+    @Override
+    public boolean mouseDragged(double mouseX, double mouseY, int button, double deltaX, double deltaY) {
+        return super.mouseDragged(mouseX, mouseY, button, deltaX, deltaY);
     }
 }

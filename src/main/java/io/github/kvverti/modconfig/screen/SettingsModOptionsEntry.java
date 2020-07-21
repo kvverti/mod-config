@@ -84,6 +84,17 @@ class SettingsModOptionsEntry extends ModOptionsEntry {
     }
 
     @Override
+    public boolean mouseDragged(double mouseX, double mouseY, int button, double deltaX, double deltaY) {
+        if(this.button1.isMouseOver(mouseX, mouseY)) {
+            return this.button1.mouseDragged(mouseX, mouseY, button, deltaX, deltaY);
+        } else if(this.button2 != null && this.button2.isMouseOver(mouseX, mouseY)) {
+            return this.button2.mouseDragged(mouseX, mouseY, button, deltaX, deltaY);
+        } else {
+            return false;
+        }
+    }
+
+    @Override
     public void render(MatrixStack matrices, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
         int spacingH = 10;
         int rightPos = x + (entryWidth / 2) + (spacingH / 2);

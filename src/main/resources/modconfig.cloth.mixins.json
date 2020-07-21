@@ -6,6 +6,7 @@
   "client": [
     "AbstractConfigScreenMixin",
     "BooleanListEntryMixin",
+    "IntegerSliderEntryMixin",
     "SelectionListEntryMixin"
   ],
   "injectors": {

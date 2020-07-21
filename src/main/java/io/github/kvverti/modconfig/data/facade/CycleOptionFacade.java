@@ -13,5 +13,7 @@ public interface CycleOptionFacade<T> extends OptionFacade<T> {
     List<Text> modcfg_getStateNames();
 
     @Override
-    CycleModOption<T> modcfg_createOption(Text modName, Text categoryName);
+    default CycleModOption<T> modcfg_createOption(Text modName, Text categoryName) {
+        return new CycleModOption<>(modName, categoryName, this);
+    }
 }

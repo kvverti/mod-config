@@ -10,5 +10,7 @@ import net.minecraft.text.Text;
 public interface BooleanOptionFacade extends OptionFacade<Boolean> {
 
     @Override
-    BooleanModOption modcfg_createOption(Text modName, Text categoryName);
+    default BooleanModOption modcfg_createOption(Text modName, Text categoryName) {
+        return new BooleanModOption(modName, categoryName, this);
+    }
 }
