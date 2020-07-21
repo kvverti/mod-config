@@ -18,8 +18,8 @@
 
   "environment": "client",
   "entrypoints": {
-    "main": [
-      "io.github.kvverti.modconfig.ExampleMod"
+    "client": [
+      "io.github.kvverti.modconfig.ModConfig"
     ]
   },
   "mixins": [

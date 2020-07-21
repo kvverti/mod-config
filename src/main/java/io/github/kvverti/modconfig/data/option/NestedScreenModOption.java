@@ -1,4 +1,6 @@
-package io.github.kvverti.modconfig.data;
+package io.github.kvverti.modconfig.data.option;
+
+import io.github.kvverti.modconfig.data.ScreenFactory;
 
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
@@ -10,8 +12,8 @@ public class NestedScreenModOption extends ModOption {
 
     private final ScreenFactory factory;
 
-    public NestedScreenModOption(Text optionName, ScreenFactory factory) {
-        super(optionName);
+    public NestedScreenModOption(Text modName, Text categoryName, ScreenFactory factory) {
+        super(modName, categoryName, categoryName);
         this.factory = factory;
     }
 

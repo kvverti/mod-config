@@ -2,8 +2,9 @@ package io.github.kvverti.modconfig.screen;
 
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
-import io.github.kvverti.modconfig.data.ModOption;
+import io.github.kvverti.modconfig.data.option.ModOption;
 import io.github.kvverti.modconfig.data.SearchableOptions;
 import org.lwjgl.glfw.GLFW;
 
@@ -12,6 +13,7 @@ import net.minecraft.client.gui.widget.AbstractButtonWidget;
 import net.minecraft.client.gui.widget.AlwaysSelectedEntryListWidget;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.LiteralText;
+import net.minecraft.text.Text;
 
 /**
  * An entry list for mod options rows.
@@ -27,19 +29,25 @@ class ModOptionsEntryList extends AlwaysSelectedEntryListWidget<ModOptionsEntry>
         super(minecraftClient, width, height, top, bottom, itemHeight);
         this.containingScreen = containingScreen;
         List<ModOption> mods = allOptions.findMods("");
-        addMods(mods);
+        addMods(mods, new LiteralText("Mods"));
     }
 
     public void search(String match) {
         entryIdx = -1;
         this.clearEntries();
         List<ModOption> mods = allOptions.findMods(match);
-        addMods(mods);
+        addMods(mods, new LiteralText("Mods"));
+        if(!match.isEmpty()) {
+            Map<String, List<ModOption>> options = allOptions.findOptions(match);
+            for(Map.Entry<String, List<ModOption>> entry : options.entrySet()) {
+                addMods(entry.getValue(), new LiteralText(entry.getKey()));
+            }
+        }
     }
 
-    private void addMods(List<ModOption> mods) {
+    private void addMods(List<ModOption> mods, Text title) {
         if(!mods.isEmpty()) {
-            this.addEntry(new LabelModOptionsEntry(this.client.textRenderer, new LiteralText("Mods")));
+            this.addEntry(new LabelModOptionsEntry(this.client.textRenderer, title));
             for(Iterator<ModOption> itr = mods.iterator(); itr.hasNext(); ) {
                 AbstractButtonWidget left = itr.next().createWidget(containingScreen, ModOptionsScreen.STANDARD_WIDTH, ModOptionsScreen.STANDARD_HEIGHT);
                 AbstractButtonWidget right;
