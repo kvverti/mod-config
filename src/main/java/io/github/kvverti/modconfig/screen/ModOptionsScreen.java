@@ -39,7 +39,6 @@ public class ModOptionsScreen extends Screen {
     protected void init() {
         super.init();
         this.entries = new ModOptionsEntryList(this, this.client, this.width, this.height, 45, this.height - 32, STANDARD_HEIGHT + PADDING_H);
-        this.entries.setScrollAmount(scrollPos);
         TextFieldWidget searchField = this.addButton(new TextFieldWidget(
             this.textRenderer,
             (this.width / 2) - (ROW_WIDTH / 2),
@@ -52,6 +51,7 @@ public class ModOptionsScreen extends Screen {
             entries.search(s);
         });
         searchField.setText(searchText);
+        this.entries.setScrollAmount(scrollPos);
         this.addButton(new ButtonWidget(
             searchField.x + SEARCH_FIELD_WIDTH + PADDING_H,
             20,
@@ -98,7 +98,8 @@ public class ModOptionsScreen extends Screen {
             // escape the scroll area if possible
             if(this.getFocused() == entries) {
                 entries.setFocusedIndex(-1);
-                ModOptionsScreen.this.setFocused(null);
+                selectedOptionIdx = -1;
+                this.setFocused(null);
                 this.changeFocus(true);
                 return true;
             }

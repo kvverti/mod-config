@@ -170,6 +170,8 @@ class ModOptionsEntryList extends AlwaysSelectedEntryListWidget<ModOptionsEntry>
 
     @Override
     public boolean mouseDragged(double mouseX, double mouseY, int button, double deltaX, double deltaY) {
-        return super.mouseDragged(mouseX, mouseY, button, deltaX, deltaY);
+        boolean ret = super.mouseDragged(mouseX, mouseY, button, deltaX, deltaY);
+        saveScreenState();
+        return ret;
     }
 }
