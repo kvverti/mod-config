@@ -9,15 +9,14 @@ import java.util.Optional;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
-import io.github.kvverti.modconfig.clothmixin.SaveConsumerAccessor;
+import io.github.kvverti.modconfig.data.facade.BooleanFacade;
+import io.github.kvverti.modconfig.data.facade.ConfigFacade;
+import io.github.kvverti.modconfig.data.facade.OptionFacade;
 import io.github.kvverti.modconfig.data.option.BooleanModOption;
 import io.github.kvverti.modconfig.data.option.ModOption;
 import io.github.kvverti.modconfig.data.option.NestedScreenModOption;
 import io.github.prospector.modmenu.api.ConfigScreenFactory;
 import io.github.prospector.modmenu.api.ModMenuApi;
-import me.shedaniel.clothconfig2.api.AbstractConfigEntry;
-import me.shedaniel.clothconfig2.gui.ClothConfigScreen;
-import me.shedaniel.clothconfig2.gui.entries.BooleanListEntry;
 
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.ModContainer;
@@ -71,19 +70,19 @@ public class SearchableOptions {
     }
 
     private void scrapeOptions(Text modName, Screen screen) {
-        if(screen instanceof ClothConfigScreen) {
-            Map<Text, List<AbstractConfigEntry<?>>> widgetsByCategory = ((ClothConfigScreen)screen).getCategorizedEntries();
-            for(Map.Entry<Text, List<AbstractConfigEntry<?>>> entry : widgetsByCategory.entrySet()) {
+        if(screen instanceof ConfigFacade) {
+            Map<Text, List<OptionFacade<?>>> widgetsByCategory = ((ConfigFacade)screen).modcfg_getOptionsByCategory();
+            for(Map.Entry<Text, List<OptionFacade<?>>> entry : widgetsByCategory.entrySet()) {
                 Text categoryName = entry.getKey();
-                for(AbstractConfigEntry<?> configEntry : entry.getValue()) {
-                    if(configEntry instanceof BooleanListEntry) {
-                        BooleanListEntry booleanListEntry = (BooleanListEntry)configEntry;
+                for(OptionFacade<?> configEntry : entry.getValue()) {
+                    if(configEntry instanceof BooleanFacade) {
+                        BooleanFacade facade = (BooleanFacade)configEntry;
                         options.add(new BooleanModOption(
                             modName,
                             categoryName,
-                            booleanListEntry.getFieldName(),
-                            booleanListEntry.getValue(),
-                            ((SaveConsumerAccessor)booleanListEntry).getSaveConsumer()
+                            facade.modcfg_getOptionName(),
+                            facade.modcfg_getValue(),
+                            facade.modcfg_getSaveHandler()
                         ));
                     }
                 }

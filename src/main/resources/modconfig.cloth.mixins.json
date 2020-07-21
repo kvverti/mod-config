@@ -4,6 +4,8 @@
   "package": "io.github.kvverti.modconfig.clothmixin",
   "compatibilityLevel": "JAVA_8",
   "client": [
+    "AbstractConfigScreenMixin",
+    "BooleanListEntryMixin",
     "SaveConsumerAccessor"
   ],
   "injectors": {

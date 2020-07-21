@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 1,
+  "id": "modconfig-testmod",
+  "version": "1.0.0",
+  "name": "Mod Config",
+  "description": "Test mod for ModConfig",
+  "authors": [
+    "kwerti"
+  ],
+  "contact": {
+    "homepage": "https://github.com/kvverti/mod-config",
+    "sources": "https://github.com/kvverti/mod-config"
+  },
+  "license": "MIT",
+  "icon": "assets/modconfig/icon.png",
+  "environment": "client",
+  "entrypoints": {
+    "modmenu": [
+      "io.github.kvverti.modconfigtest.ModConfigTest"
+    ]
+  },
+  "depends": {
+    "fabricloader": ">=0.7.4",
+    "fabric": "*",
+    "minecraft": "1.16.x"
+  },
+  "suggests": {
+    "flamingo": "*"
+  }
+}
