@@ -4,8 +4,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import io.github.kvverti.modconfig.data.option.ModOption;
 import io.github.kvverti.modconfig.data.SearchableOptions;
+import io.github.kvverti.modconfig.data.option.ModOption;
 import org.lwjgl.glfw.GLFW;
 
 import net.minecraft.client.MinecraftClient;

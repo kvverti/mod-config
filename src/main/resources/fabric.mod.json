@@ -23,7 +23,8 @@
     ]
   },
   "mixins": [
-    "modconfig.mixins.json"
+    "modconfig.mixins.json",
+    "modconfig.cloth.mixins.json"
   ],
 
   "depends": {

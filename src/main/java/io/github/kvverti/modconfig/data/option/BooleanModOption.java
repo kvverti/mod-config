@@ -1,5 +1,7 @@
 package io.github.kvverti.modconfig.data.option;
 
+import java.util.function.Consumer;
+
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.client.gui.widget.AbstractButtonWidget;
@@ -11,10 +13,12 @@ import net.minecraft.text.Text;
 public class BooleanModOption extends ModOption {
 
     private boolean state;
+    private final Consumer<Boolean> saveHandler;
 
-    public BooleanModOption(Text modName, Text categoryName, Text optionName, boolean initialState) {
+    public BooleanModOption(Text modName, Text categoryName, Text optionName, boolean initialState, Consumer<Boolean> saveHandler) {
         super(modName, categoryName, optionName);
         this.state = initialState;
+        this.saveHandler = saveHandler;
     }
 
     @Override
@@ -25,6 +29,7 @@ public class BooleanModOption extends ModOption {
             btn -> {
                 state ^= true;
                 btn.setMessage(getMessageText());
+                saveHandler.accept(state);
             }
         );
     }

@@ -9,6 +9,7 @@ import java.util.Optional;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
+import io.github.kvverti.modconfig.clothmixin.SaveConsumerAccessor;
 import io.github.kvverti.modconfig.data.option.BooleanModOption;
 import io.github.kvverti.modconfig.data.option.ModOption;
 import io.github.kvverti.modconfig.data.option.NestedScreenModOption;
@@ -77,7 +78,13 @@ public class SearchableOptions {
                 for(AbstractConfigEntry<?> configEntry : entry.getValue()) {
                     if(configEntry instanceof BooleanListEntry) {
                         BooleanListEntry booleanListEntry = (BooleanListEntry)configEntry;
-                        options.add(new BooleanModOption(modName, categoryName, booleanListEntry.getFieldName(), booleanListEntry.getValue()));
+                        options.add(new BooleanModOption(
+                            modName,
+                            categoryName,
+                            booleanListEntry.getFieldName(),
+                            booleanListEntry.getValue(),
+                            ((SaveConsumerAccessor)booleanListEntry).getSaveConsumer()
+                        ));
                     }
                 }
             }
