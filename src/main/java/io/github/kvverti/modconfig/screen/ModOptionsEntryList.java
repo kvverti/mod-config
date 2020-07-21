@@ -138,8 +138,13 @@ class ModOptionsEntryList extends AlwaysSelectedEntryListWidget<ModOptionsEntry>
         if(keyCode == GLFW.GLFW_KEY_DOWN || keyCode == GLFW.GLFW_KEY_UP) {
             // up/down arrows
             boolean down = keyCode == GLFW.GLFW_KEY_DOWN;
-            if(entryIdx == -1 || changeFocus(down)) {
-                changeFocus(down);
+            if(entryIdx == -1) {
+                this.changeFocus(down);
+            } else {
+                int parity = ((SettingsModOptionsEntry)this.getEntry(entryIdx)).getFocusParity();
+                do {
+                    changeFocus(down);
+                } while(entryIdx != -1 && ((SettingsModOptionsEntry)this.getEntry(entryIdx)).getFocusParity() != parity);
             }
             return true;
         } else if(keyCode == GLFW.GLFW_KEY_RIGHT || keyCode == GLFW.GLFW_KEY_LEFT) {
