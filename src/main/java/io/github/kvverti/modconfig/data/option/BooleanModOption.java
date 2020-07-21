@@ -2,6 +2,8 @@ package io.github.kvverti.modconfig.data.option;
 
 import java.util.function.Consumer;
 
+import io.github.kvverti.modconfig.data.facade.BooleanOptionFacade;
+
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.client.gui.widget.AbstractButtonWidget;
@@ -15,10 +17,10 @@ public class BooleanModOption extends ModOption {
     private boolean state;
     private final Consumer<Boolean> saveHandler;
 
-    public BooleanModOption(Text modName, Text categoryName, Text optionName, boolean initialState, Consumer<Boolean> saveHandler) {
-        super(modName, categoryName, optionName);
-        this.state = initialState;
-        this.saveHandler = saveHandler;
+    public BooleanModOption(Text modName, Text categoryName, BooleanOptionFacade facade) {
+        super(modName, categoryName, facade.modcfg_getOptionName());
+        this.state = facade.modcfg_getValue();
+        this.saveHandler = facade.modcfg_getSaveHandler();
     }
 
     @Override

@@ -6,7 +6,8 @@
   "client": [
     "AbstractConfigScreenMixin",
     "BooleanListEntryMixin",
-    "SaveConsumerAccessor"
+    "SaveConsumerAccessor",
+    "SelectionListEntryMixin"
   ],
   "injectors": {
     "defaultRequire": 1

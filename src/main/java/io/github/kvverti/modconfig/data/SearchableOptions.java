@@ -9,10 +9,12 @@ import java.util.Optional;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
-import io.github.kvverti.modconfig.data.facade.BooleanFacade;
+import io.github.kvverti.modconfig.data.facade.BooleanOptionFacade;
 import io.github.kvverti.modconfig.data.facade.ConfigFacade;
+import io.github.kvverti.modconfig.data.facade.CycleOptionFacade;
 import io.github.kvverti.modconfig.data.facade.OptionFacade;
 import io.github.kvverti.modconfig.data.option.BooleanModOption;
+import io.github.kvverti.modconfig.data.option.CycleModOption;
 import io.github.kvverti.modconfig.data.option.ModOption;
 import io.github.kvverti.modconfig.data.option.NestedScreenModOption;
 import io.github.prospector.modmenu.api.ConfigScreenFactory;
@@ -75,15 +77,12 @@ public class SearchableOptions {
             for(Map.Entry<Text, List<OptionFacade<?>>> entry : widgetsByCategory.entrySet()) {
                 Text categoryName = entry.getKey();
                 for(OptionFacade<?> configEntry : entry.getValue()) {
-                    if(configEntry instanceof BooleanFacade) {
-                        BooleanFacade facade = (BooleanFacade)configEntry;
-                        options.add(new BooleanModOption(
-                            modName,
-                            categoryName,
-                            facade.modcfg_getOptionName(),
-                            facade.modcfg_getValue(),
-                            facade.modcfg_getSaveHandler()
-                        ));
+                    if(configEntry instanceof BooleanOptionFacade) {
+                        BooleanOptionFacade facade = (BooleanOptionFacade)configEntry;
+                        options.add(new BooleanModOption(modName, categoryName, facade));
+                    } else if(configEntry instanceof CycleOptionFacade<?>) {
+                        CycleOptionFacade<?> facade = (CycleOptionFacade<?>)configEntry;
+                        options.add(new CycleModOption<>(modName, categoryName, facade));
                     }
                 }
             }
