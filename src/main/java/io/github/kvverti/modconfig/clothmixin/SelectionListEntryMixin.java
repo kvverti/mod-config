@@ -7,6 +7,7 @@ import java.util.function.Function;
 
 import com.google.common.collect.ImmutableList;
 import io.github.kvverti.modconfig.data.facade.CycleOptionFacade;
+import io.github.kvverti.modconfig.data.option.CycleModOption;
 import me.shedaniel.clothconfig2.gui.entries.SelectionListEntry;
 import me.shedaniel.clothconfig2.gui.entries.TooltipListEntry;
 import org.spongepowered.asm.mixin.Mixin;
@@ -58,5 +59,10 @@ public abstract class SelectionListEntryMixin<T> extends TooltipListEntry<T> imp
     @Override
     public Consumer<T> modcfg_getSaveHandler() {
         return this.saveConsumer;
+    }
+
+    @Override
+    public CycleModOption<T> modcfg_createOption(Text modName, Text categoryName) {
+        return new CycleModOption<>(modName, categoryName, this);
     }
 }

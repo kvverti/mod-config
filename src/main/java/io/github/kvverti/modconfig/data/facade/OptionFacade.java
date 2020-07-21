@@ -2,6 +2,8 @@ package io.github.kvverti.modconfig.data.facade;
 
 import java.util.function.Consumer;
 
+import io.github.kvverti.modconfig.data.option.ModOption;
+
 import net.minecraft.text.Text;
 
 /**
@@ -16,4 +18,6 @@ public interface OptionFacade<T> {
     T modcfg_getValue();
 
     Consumer<T> modcfg_getSaveHandler();
+
+    ModOption modcfg_createOption(Text modName, Text categoryName);
 }
