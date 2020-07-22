@@ -61,6 +61,7 @@ class SettingsModOptionsEntry extends ModOptionsEntry {
         return (focused == null || focused == button1) ? 0 : 1;
     }
 
+    @Override
     public void clearFocus() {
         if(focused != null && focused.isFocused()) {
             focused.changeFocus(true);

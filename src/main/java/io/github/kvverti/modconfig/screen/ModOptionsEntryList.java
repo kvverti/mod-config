@@ -100,10 +100,7 @@ class ModOptionsEntryList extends AlwaysSelectedEntryListWidget<ModOptionsEntry>
         } else {
             if(entryIdx != -1) {
                 ModOptionsEntry elem = this.getEntry(entryIdx);
-                // TODO for wide options too
-                if(elem instanceof SettingsModOptionsEntry) {
-                    ((SettingsModOptionsEntry)elem).clearFocus();
-                }
+                elem.clearFocus();
                 entryIdx = -1;
             }
         }

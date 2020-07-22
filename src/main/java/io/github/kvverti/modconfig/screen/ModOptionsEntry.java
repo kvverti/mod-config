@@ -16,4 +16,10 @@ public abstract class ModOptionsEntry extends AlwaysSelectedEntryListWidget.Entr
     public int getFocusColumnParity() {
         return -1;
     }
+
+    /**
+     * Clears the focus from this entry. Idempotent.
+     */
+    public void clearFocus() {
+    }
 }
