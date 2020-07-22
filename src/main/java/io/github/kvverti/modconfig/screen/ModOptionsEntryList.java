@@ -1,5 +1,6 @@
 package io.github.kvverti.modconfig.screen;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -24,6 +25,8 @@ class ModOptionsEntryList extends AlwaysSelectedEntryListWidget<ModOptionsEntry>
     private final SearchableOptions allOptions = new SearchableOptions();
 
     private int entryIdx = -1;
+    // zero for first column, one for second column
+    private int columnParity = 0;
 
     public ModOptionsEntryList(ModOptionsScreen containingScreen, MinecraftClient minecraftClient, int width, int height, int top, int bottom, int itemHeight) {
         super(minecraftClient, width, height, top, bottom, itemHeight);
@@ -49,14 +52,32 @@ class ModOptionsEntryList extends AlwaysSelectedEntryListWidget<ModOptionsEntry>
         if(!mods.isEmpty()) {
             this.addEntry(new LabelModOptionsEntry(this.client.textRenderer, title));
             for(Iterator<ModOption> itr = mods.iterator(); itr.hasNext(); ) {
-                AbstractButtonWidget left = itr.next().createWidget(containingScreen, ModOptionsScreen.STANDARD_WIDTH, ModOptionsScreen.STANDARD_HEIGHT);
-                AbstractButtonWidget right;
-                if(itr.hasNext()) {
-                    right = itr.next().createWidget(containingScreen, ModOptionsScreen.STANDARD_WIDTH, ModOptionsScreen.STANDARD_HEIGHT);
+                ModOption option = itr.next();
+                AbstractButtonWidget left = option.createWidget(containingScreen, ModOptionsScreen.STANDARD_WIDTH, ModOptionsScreen.STANDARD_HEIGHT);
+                if(option.isFullWidth()) {
+                    Text label = option.getOptionName();
+                    this.addEntry(new WideSettingModOptionsEntry(label, left, this.client.textRenderer.isRightToLeft()));
                 } else {
-                    right = null;
+                    AbstractButtonWidget right;
+                    List<ModOptionsEntry> wideOptions = new ArrayList<>();
+                    option = null;
+                    // save wide options for after the second non-wide option; this prevents empty spaces in non-wide entries
+                    while(itr.hasNext() && (option = itr.next()).isFullWidth()) {
+                        Text label = option.getOptionName();
+                        AbstractButtonWidget widget = option.createWidget(containingScreen, ModOptionsScreen.STANDARD_WIDTH, ModOptionsScreen.STANDARD_HEIGHT);
+                        wideOptions.add(new WideSettingModOptionsEntry(label, widget, this.client.textRenderer.isRightToLeft()));
+                        option = null;
+                    }
+                    if(option != null) {
+                        right = option.createWidget(containingScreen, ModOptionsScreen.STANDARD_WIDTH, ModOptionsScreen.STANDARD_HEIGHT);
+                    } else {
+                        right = null;
+                    }
+                    this.addEntry(new SettingsModOptionsEntry(left, right, this.client.textRenderer.isRightToLeft()));
+                    for(ModOptionsEntry wideOption : wideOptions) {
+                        this.addEntry(wideOption);
+                    }
                 }
-                this.addEntry(new SettingsModOptionsEntry(left, right, this.client.textRenderer.isRightToLeft()));
             }
         }
     }
@@ -64,14 +85,7 @@ class ModOptionsEntryList extends AlwaysSelectedEntryListWidget<ModOptionsEntry>
     private void saveScreenState() {
         containingScreen.setScrollPos(this.getScrollAmount());
         if(entryIdx != -1) {
-            ModOptionsEntry entry = this.getEntry(entryIdx);
-            int parity;
-            if(entry instanceof SettingsModOptionsEntry) {
-                parity = ((SettingsModOptionsEntry)entry).getFocusParity();
-            } else {
-                parity = 0;
-            }
-            containingScreen.setSelectedOptionIdx(2 * entryIdx + parity);
+            containingScreen.setSelectedOptionIdx(2 * entryIdx + columnParity);
         } else {
             containingScreen.setSelectedOptionIdx(-1);
         }
@@ -80,11 +94,13 @@ class ModOptionsEntryList extends AlwaysSelectedEntryListWidget<ModOptionsEntry>
     public void setFocusedIndex(int idx) {
         if(idx >= 0 && idx < 2 * this.getItemCount()) {
             entryIdx = idx / 2;
+            columnParity = idx % 2;
             ModOptionsEntry elem = this.getEntry(entryIdx);
             elem.changeFocus(idx % 2 == 0);
         } else {
             if(entryIdx != -1) {
                 ModOptionsEntry elem = this.getEntry(entryIdx);
+                // TODO for wide options too
                 if(elem instanceof SettingsModOptionsEntry) {
                     ((SettingsModOptionsEntry)elem).clearFocus();
                 }
@@ -129,6 +145,10 @@ class ModOptionsEntryList extends AlwaysSelectedEntryListWidget<ModOptionsEntry>
             }
         }
         this.centerScrollOn(entry);
+        int parity = entry.getFocusColumnParity();
+        if(parity != -1) {
+            columnParity = parity;
+        }
         saveScreenState();
         return entryIdx != -1;
     }
@@ -143,10 +163,24 @@ class ModOptionsEntryList extends AlwaysSelectedEntryListWidget<ModOptionsEntry>
             if(entryIdx == -1) {
                 this.changeFocus(down);
             } else {
-                int parity = ((SettingsModOptionsEntry)this.getEntry(entryIdx)).getFocusParity();
+                // navigating vertically should not change the parity
+                int parity = this.getEntry(entryIdx).getFocusColumnParity();
+                if(parity == -1) {
+                    parity = columnParity;
+                }
+                boolean done;
                 do {
                     changeFocus(down);
-                } while(entryIdx != -1 && ((SettingsModOptionsEntry)this.getEntry(entryIdx)).getFocusParity() != parity);
+                    if(entryIdx != -1) {
+                        int entryParity = this.getEntry(entryIdx).getFocusColumnParity();
+                        done = entryParity == -1 || entryParity == parity;
+                    } else {
+                        done = true;
+                    }
+                } while(!done);
+                // must reset the parity afterwards (as changeFocus() updates the parity)
+                columnParity = parity;
+                saveScreenState();
             }
             return true;
         } else if(keyCode == GLFW.GLFW_KEY_RIGHT || keyCode == GLFW.GLFW_KEY_LEFT) {

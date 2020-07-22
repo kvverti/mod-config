@@ -54,4 +54,11 @@ public abstract class ModOption {
     }
 
     public abstract AbstractButtonWidget createWidget(Screen containing, int width, int height);
+
+    /**
+     * True if the option should take up an entire row, false if the option should take up only half a row.
+     */
+    public boolean isFullWidth() {
+        return false;
+    }
 }

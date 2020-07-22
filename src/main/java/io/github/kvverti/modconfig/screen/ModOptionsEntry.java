@@ -9,4 +9,11 @@ public abstract class ModOptionsEntry extends AlwaysSelectedEntryListWidget.Entr
 
     protected ModOptionsEntry() {
     }
+
+    /**
+     * The current focused element's column parity. Returns 0 for first, 1 for second, -1 for pass through.
+     */
+    public int getFocusColumnParity() {
+        return -1;
+    }
 }

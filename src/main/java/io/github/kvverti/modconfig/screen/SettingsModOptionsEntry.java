@@ -56,7 +56,8 @@ class SettingsModOptionsEntry extends ModOptionsEntry {
         }
     }
 
-    public int getFocusParity() {
+    @Override
+    public int getFocusColumnParity() {
         return (focused == null || focused == button1) ? 0 : 1;
     }
 
