@@ -59,6 +59,11 @@ public class WideSettingModOptionsEntry extends ModOptionsEntry {
     }
 
     @Override
+    public boolean charTyped(char chr, int keyCode) {
+        return widget.charTyped(chr, keyCode);
+    }
+
+    @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
         return widget.mouseClicked(mouseX, mouseY, button);
     }

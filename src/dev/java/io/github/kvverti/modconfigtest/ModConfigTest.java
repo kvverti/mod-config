@@ -14,6 +14,7 @@ public class ModConfigTest implements ModMenuApi {
     private boolean boolValue = false;
     private TestEnum enumValue = TestEnum.A;
     private int intValue = 3;
+    private String strValue = "hello";
 
     @Override
     public ConfigScreenFactory<?> getModConfigScreenFactory() {
@@ -34,6 +35,11 @@ public class ModConfigTest implements ModMenuApi {
                 .startIntSlider(new LiteralText("Int Slider"), intValue, 0, 7)
                 .setDefaultValue(3)
                 .setSaveConsumer(value -> intValue = value)
+                .build());
+            category.addEntry(builder.entryBuilder()
+                .startTextField(new LiteralText("Text Field"), strValue)
+                .setDefaultValue("hello")
+                .setSaveConsumer(value -> strValue = value)
                 .build());
             builder.setSavingRunnable(() -> {
                 System.out.println(boolValue);

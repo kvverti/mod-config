@@ -34,22 +34,28 @@ class SettingsModOptionsEntry extends ModOptionsEntry {
                 return button1.changeFocus(lookForwards);
             }
         } else if(focused == button1) {
-            button1.changeFocus(lookForwards);
-            if(this.button2 != null && lookForwards) {
-                focused = button2;
-                return button2.changeFocus(lookForwards);
+            if(button1.changeFocus(lookForwards)) {
+                return true;
             } else {
-                focused = null;
-                return false;
+                if(this.button2 != null && lookForwards) {
+                    focused = button2;
+                    return button2.changeFocus(lookForwards);
+                } else {
+                    focused = null;
+                    return false;
+                }
             }
         } else if(focused == button2) {
-            button2.changeFocus(lookForwards);
-            if(!lookForwards) {
-                focused = button1;
-                return button1.changeFocus(lookForwards);
+            if(button2.changeFocus(lookForwards)) {
+                return true;
             } else {
-                focused = null;
-                return false;
+                if(!lookForwards) {
+                    focused = button1;
+                    return button1.changeFocus(lookForwards);
+                } else {
+                    focused = null;
+                    return false;
+                }
             }
         } else {
             return false;
@@ -75,11 +81,26 @@ class SettingsModOptionsEntry extends ModOptionsEntry {
     }
 
     @Override
+    public boolean charTyped(char chr, int keyCode) {
+        return focused != null && focused.charTyped(chr, keyCode);
+    }
+
+    @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
         if(this.button1.isMouseOver(mouseX, mouseY)) {
-            return this.button1.mouseClicked(mouseX, mouseY, button);
+            boolean ret = this.button1.mouseClicked(mouseX, mouseY, button);
+            if(ret) {
+                clearFocus();
+                focused = button1;
+            }
+            return ret;
         } else if(this.button2 != null && this.button2.isMouseOver(mouseX, mouseY)) {
-            return this.button2.mouseClicked(mouseX, mouseY, button);
+            boolean ret = this.button2.mouseClicked(mouseX, mouseY, button);
+            if(ret) {
+                clearFocus();
+                focused = button2;
+            }
+            return ret;
         } else {
             return false;
         }

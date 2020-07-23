@@ -97,6 +97,7 @@ class ModOptionsEntryList extends AlwaysSelectedEntryListWidget<ModOptionsEntry>
             columnParity = idx % 2;
             ModOptionsEntry elem = this.getEntry(entryIdx);
             elem.changeFocus(idx % 2 == 0);
+            this.setFocused(elem);
         } else {
             if(entryIdx != -1) {
                 ModOptionsEntry elem = this.getEntry(entryIdx);
@@ -147,12 +148,22 @@ class ModOptionsEntryList extends AlwaysSelectedEntryListWidget<ModOptionsEntry>
             columnParity = parity;
         }
         saveScreenState();
-        return entryIdx != -1;
+        if(entryIdx != -1) {
+            this.setFocused(entry);
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    @Override
+    public boolean charTyped(char chr, int keyCode) {
+        return this.getFocused() != null && this.getFocused().charTyped(chr, keyCode);
     }
 
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        if(entryIdx != -1 && this.getEntry(entryIdx).keyPressed(keyCode, scanCode, modifiers)) {
+        if(this.getFocused() != null && this.getFocused().keyPressed(keyCode, scanCode, modifiers)) {
             return true;
         } else if(keyCode == GLFW.GLFW_KEY_DOWN || keyCode == GLFW.GLFW_KEY_UP) {
             // up/down arrows
@@ -190,6 +201,24 @@ class ModOptionsEntryList extends AlwaysSelectedEntryListWidget<ModOptionsEntry>
             this.setSelected(null);
             return false;
         }
+    }
+
+    @Override
+    public boolean mouseClicked(double mouseX, double mouseY, int button) {
+        ModOptionsEntry oldFocused = this.getFocused();
+        boolean ret = super.mouseClicked(mouseX, mouseY, button);
+        ModOptionsEntry focused = this.getFocused();
+        if(ret && focused != null) {
+            if(oldFocused != null && oldFocused != focused) {
+                oldFocused.clearFocus();
+            }
+            entryIdx = this.children().indexOf(focused);
+            int parity = focused.getFocusColumnParity();
+            if(parity != -1) {
+                columnParity = parity;
+            }
+        }
+        return ret;
     }
 
     @Override
