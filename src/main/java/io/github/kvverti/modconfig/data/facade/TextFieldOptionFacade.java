@@ -10,7 +10,11 @@ public interface TextFieldOptionFacade extends OptionFacade<String> {
 
     int modcfg_getMaxLength();
 
-    Predicate<String> modcfg_getValidator();
+    Predicate<String> modcfg_getTextPredicate();
+
+    default Predicate<String> modcfg_getValidator() {
+        return modcfg_getTextPredicate();
+    }
 
     boolean modcfg_isShort();
 

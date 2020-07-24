@@ -30,7 +30,7 @@ public abstract class StringListEntryMixin extends TextFieldListEntry<String> im
     }
 
     @Override
-    public Predicate<String> modcfg_getValidator() {
+    public Predicate<String> modcfg_getTextPredicate() {
         return value -> true;
     }
 

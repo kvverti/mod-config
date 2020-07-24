@@ -17,6 +17,12 @@ import net.minecraft.text.Text;
 public abstract class IntegerListEntryMixin extends TextFieldListEntry<Integer> implements TextFieldOptionFacade {
 
     @Shadow
+    private int minimum;
+
+    @Shadow
+    private int maximum;
+
+    @Shadow
     private Consumer<Integer> saveConsumer;
 
     @Shadow
@@ -33,8 +39,20 @@ public abstract class IntegerListEntryMixin extends TextFieldListEntry<Integer> 
     }
 
     @Override
-    public Predicate<String> modcfg_getValidator() {
+    public Predicate<String> modcfg_getTextPredicate() {
         return value -> value.matches("[+-]?\\d*");
+    }
+
+    @Override
+    public Predicate<String> modcfg_getValidator() {
+        return value -> {
+            try {
+                int i = Integer.parseInt(value);
+                return i >= this.minimum && i <= this.maximum;
+            } catch(NumberFormatException e) {
+                return false;
+            }
+        };
     }
 
     @Override
@@ -54,12 +72,6 @@ public abstract class IntegerListEntryMixin extends TextFieldListEntry<Integer> 
 
     @Override
     public Consumer<String> modcfg_getSaveHandler() {
-        return value -> {
-            try {
-                this.saveConsumer.accept(Integer.parseInt(value));
-            } catch(NumberFormatException e) {
-                // ignored
-            }
-        };
+        return value -> this.saveConsumer.accept(Integer.parseInt(value));
     }
 }

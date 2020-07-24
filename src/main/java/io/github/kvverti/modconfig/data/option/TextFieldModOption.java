@@ -15,12 +15,14 @@ import net.minecraft.text.Text;
 public class TextFieldModOption extends ModOption<String> {
 
     private final int maxLength;
+    private final Predicate<String> textPredicate;
     private final Predicate<String> validator;
     private final boolean isShort;
 
     public TextFieldModOption(Text modName, Text categoryName, TextFieldOptionFacade facade) {
         super(modName, categoryName, facade);
         this.maxLength = facade.modcfg_getMaxLength();
+        this.textPredicate = facade.modcfg_getTextPredicate();
         this.validator = facade.modcfg_getValidator();
         this.isShort = facade.modcfg_isShort();
     }
@@ -35,7 +37,7 @@ public class TextFieldModOption extends ModOption<String> {
         TextRenderer textRenderer = MinecraftClient.getInstance().textRenderer;
         TextFieldWidget widget = new TextFieldWidget(textRenderer, 0, 0, width, height, this.getOptionName());
         widget.setMaxLength(maxLength);
-        widget.setTextPredicate(validator);
+        widget.setTextPredicate(textPredicate);
         widget.setText(this.getState());
         widget.setChangedListener(this::saveState);
         if(isShort) {

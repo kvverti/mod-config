@@ -44,6 +44,8 @@ public class ModConfigTest implements ModMenuApi {
                 .build());
             category.addEntry(builder.entryBuilder()
                 .startIntField(new LiteralText("Int Field"), intFieldValue)
+                .setMin(-99)
+                .setMax(99)
                 .setDefaultValue(0)
                 .setSaveConsumer(value -> intFieldValue = value)
                 .build());
