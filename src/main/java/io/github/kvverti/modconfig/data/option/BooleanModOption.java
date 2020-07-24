@@ -24,6 +24,11 @@ public class BooleanModOption extends ModOption {
     }
 
     @Override
+    public boolean isStoredOptionValid() {
+        return true;
+    }
+
+    @Override
     public AbstractButtonWidget createWidget(Screen containing, int width, int height) {
         Text optionLabel = getMessageText();
         return new ButtonWidget(

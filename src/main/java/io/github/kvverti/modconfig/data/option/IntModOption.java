@@ -27,6 +27,11 @@ public class IntModOption extends ModOption {
     }
 
     @Override
+    public boolean isStoredOptionValid() {
+        return state <= max && state >= min;
+    }
+
+    @Override
     public AbstractButtonWidget createWidget(Screen containing, int width, int height) {
         return new SliderWidget(0, 0, width, height, getMessageText(), (double)(state - min) / max) {
             @Override

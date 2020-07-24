@@ -28,6 +28,11 @@ public class CycleModOption<T> extends ModOption {
     }
 
     @Override
+    public boolean isStoredOptionValid() {
+        return true;
+    }
+
+    @Override
     public AbstractButtonWidget createWidget(Screen containing, int width, int height) {
         return new ButtonWidget(
             0, 0, width, height, getOptionMessage(),

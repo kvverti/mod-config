@@ -53,6 +53,11 @@ public abstract class ModOption {
         }
     }
 
+    /**
+     * True if the value of this option is valid and is ok to be saved, false if not.
+     */
+    public abstract boolean isStoredOptionValid();
+
     public abstract AbstractButtonWidget createWidget(Screen containing, int width, int height);
 
     /**

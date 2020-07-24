@@ -31,6 +31,11 @@ public class TextFieldModOption extends ModOption {
     }
 
     @Override
+    public boolean isStoredOptionValid() {
+        return validator.test(state);
+    }
+
+    @Override
     public AbstractButtonWidget createWidget(Screen containing, int width, int height) {
         TextRenderer textRenderer = MinecraftClient.getInstance().textRenderer;
         TextFieldWidget widget = new TextFieldWidget(textRenderer, 0, 0, width, height, this.getOptionName());
