@@ -13,6 +13,8 @@ public interface TextFieldOptionFacade extends OptionFacade<String> {
 
     Predicate<String> modcfg_getValidator();
 
+    boolean modcfg_isShort();
+
     @Override
     default ModOption modcfg_createOption(Text modName, Text categoryName) {
         return new TextFieldModOption(modName, categoryName, this);

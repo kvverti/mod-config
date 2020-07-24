@@ -6,6 +6,7 @@
   "client": [
     "AbstractConfigScreenMixin",
     "BooleanListEntryMixin",
+    "IntegerListEntryMixin",
     "IntegerSliderEntryMixin",
     "SelectionListEntryMixin",
     "StringListEntryMixin"

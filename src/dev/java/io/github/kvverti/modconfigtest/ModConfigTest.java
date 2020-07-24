@@ -15,6 +15,7 @@ public class ModConfigTest implements ModMenuApi {
     private TestEnum enumValue = TestEnum.A;
     private int intValue = 3;
     private String strValue = "hello";
+    private int intFieldValue = 0;
 
     @Override
     public ConfigScreenFactory<?> getModConfigScreenFactory() {
@@ -41,10 +42,17 @@ public class ModConfigTest implements ModMenuApi {
                 .setDefaultValue("hello")
                 .setSaveConsumer(value -> strValue = value)
                 .build());
+            category.addEntry(builder.entryBuilder()
+                .startIntField(new LiteralText("Int Field"), intFieldValue)
+                .setDefaultValue(0)
+                .setSaveConsumer(value -> intFieldValue = value)
+                .build());
             builder.setSavingRunnable(() -> {
                 System.out.println(boolValue);
                 System.out.println(enumValue);
                 System.out.println(intValue);
+                System.out.println(strValue);
+                System.out.println(intFieldValue);
             });
             return builder.setParentScreen(parent).build();
         };
