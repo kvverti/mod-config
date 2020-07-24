@@ -30,28 +30,28 @@ class ModOptionsEntryList extends AlwaysSelectedEntryListWidget<ModOptionsEntry>
     public ModOptionsEntryList(ModOptionsScreen containingScreen, MinecraftClient minecraftClient, int width, int height, int top, int bottom, int itemHeight) {
         super(minecraftClient, width, height, top, bottom, itemHeight);
         this.containingScreen = containingScreen;
-        List<ModOption> mods = allOptions.findMods("");
+        List<ModOption<?>> mods = allOptions.findMods("");
         addMods(mods, new LiteralText("Mods"));
     }
 
     public void search(String match) {
         this.setFocused(null);
         this.clearEntries();
-        List<ModOption> mods = allOptions.findMods(match);
+        List<ModOption<?>> mods = allOptions.findMods(match);
         addMods(mods, new LiteralText("Mods"));
         if(!match.isEmpty()) {
-            Map<String, List<ModOption>> options = allOptions.findOptions(match);
-            for(Map.Entry<String, List<ModOption>> entry : options.entrySet()) {
+            Map<String, List<ModOption<?>>> options = allOptions.findOptions(match);
+            for(Map.Entry<String, List<ModOption<?>>> entry : options.entrySet()) {
                 addMods(entry.getValue(), new LiteralText(entry.getKey()));
             }
         }
     }
 
-    private void addMods(List<ModOption> mods, Text title) {
+    private void addMods(List<ModOption<?>> mods, Text title) {
         if(!mods.isEmpty()) {
             this.addEntry(new LabelModOptionsEntry(this.client.textRenderer, title));
-            for(Iterator<ModOption> itr = mods.iterator(); itr.hasNext(); ) {
-                ModOption option = itr.next();
+            for(Iterator<ModOption<?>> itr = mods.iterator(); itr.hasNext(); ) {
+                ModOption<?> option = itr.next();
                 AbstractButtonWidget left = option.createWidget(containingScreen, ModOptionsScreen.STANDARD_WIDTH, ModOptionsScreen.STANDARD_HEIGHT);
                 if(option.isFullWidth()) {
                     Text label = option.getOptionName();

@@ -1,20 +1,28 @@
 package io.github.kvverti.modconfig.data.option;
 
+import java.util.function.Consumer;
+
+import io.github.kvverti.modconfig.data.facade.OptionFacade;
+
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.AbstractButtonWidget;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 
-public abstract class ModOption {
+public abstract class ModOption<T> {
     private final Text modName;
     private final Text categoryName;
     private final Text optionName;
+    private final Consumer<T> saveHandler;
+    private T state;
 
-    protected ModOption(Text modName, Text categoryName, Text optionName) {
+    protected ModOption(Text modName, Text categoryName, OptionFacade<T> facade) {
         this.modName = modName;
         this.categoryName = categoryName;
-        this.optionName = optionName;
+        this.optionName = facade.modcfg_getOptionName();
+        this.saveHandler = facade.modcfg_getSaveHandler();
+        this.state = facade.modcfg_getValue();
     }
 
     public final Text getModName() {
@@ -65,5 +73,22 @@ public abstract class ModOption {
      */
     public boolean isFullWidth() {
         return false;
+    }
+
+    /**
+     * Returns the current state. This state may not be valid.
+     */
+    protected final T getState() {
+        return state;
+    }
+
+    /**
+     * Sets the current state, and saves it if it is valid.
+     */
+    protected final void saveState(T state) {
+        this.state = state;
+        if(isStoredOptionValid()) {
+            saveHandler.accept(state);
+        }
     }
 }
