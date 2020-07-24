@@ -113,10 +113,9 @@ public class SearchableOptions {
                 foundInMod.add(option);
             }
         }
-        Comparator<ModOption<?>> cmp = Comparator.comparing(ModOption::getLocalizedOptionName);
-        found.sort(cmp);
-        foundInCategory.sort(cmp);
-        foundInMod.sort(cmp);
+        found.sort(Comparator.comparing(ModOption::getLocalizedOptionName));
+        foundInCategory.sort(Comparator.comparing(ModOption::getLocalizedCategoryName));
+        foundInMod.sort(Comparator.comparing(ModOption::getLocalizedModName));
         found.addAll(foundInCategory);
         found.addAll(foundInMod);
         return found;
