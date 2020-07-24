@@ -24,7 +24,9 @@ public class WideSettingModOptionsEntry extends ModOptionsEntry {
     @Override
     public void render(MatrixStack matrices, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
         TextRenderer textRenderer = MinecraftClient.getInstance().textRenderer;
-        int widgetWidth = entryWidth * 2 / 3;
+        final int spacingH = 10;
+        int halfWidth = (entryWidth - spacingH) / 2;
+        int widgetWidth = halfWidth + spacingH + (halfWidth / 3);
         widget.setWidth(widgetWidth);
         widget.y = y;
         int textY = y + (entryHeight / 2) - (textRenderer.fontHeight / 2);
