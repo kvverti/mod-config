@@ -6,7 +6,6 @@ import org.lwjgl.glfw.GLFW;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.AbstractButtonWidget;
 import net.minecraft.client.gui.widget.SliderWidget;
-import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 
 public class IntModOption extends ModOption<Integer> {
@@ -27,10 +26,10 @@ public class IntModOption extends ModOption<Integer> {
 
     @Override
     public AbstractButtonWidget createWidget(Screen containing, int width, int height) {
-        return new SliderWidget(0, 0, width, height, getMessageText(), (double)(this.getState() - min) / max) {
+        return new SliderWidget(0, 0, width, height, getMergedMessageText(), (double)(this.getState() - min) / max) {
             @Override
             protected void updateMessage() {
-                this.setMessage(getMessageText());
+                this.setMessage(IntModOption.this.getMergedMessageText());
             }
 
             @Override
@@ -45,12 +44,5 @@ public class IntModOption extends ModOption<Integer> {
                 return ret || keyCode == GLFW.GLFW_KEY_LEFT || keyCode == GLFW.GLFW_KEY_RIGHT;
             }
         };
-    }
-
-    private Text getMessageText() {
-        return new LiteralText("")
-            .append(this.getOptionName())
-            .append(": ")
-            .append(Integer.toString(this.getState()));
     }
 }

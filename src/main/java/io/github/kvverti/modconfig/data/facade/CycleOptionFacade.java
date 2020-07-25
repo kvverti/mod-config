@@ -10,6 +10,7 @@ public interface CycleOptionFacade<T> extends OptionFacade<T> {
 
     List<T> modcfg_getStates();
 
+    @Deprecated
     List<Text> modcfg_getStateNames();
 
     @Override

@@ -1,12 +1,16 @@
 package io.github.kvverti.modconfig.data.option;
 
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 import io.github.kvverti.modconfig.data.facade.OptionFacade;
 
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.AbstractButtonWidget;
 import net.minecraft.client.resource.language.I18n;
+import net.minecraft.text.LiteralText;
+import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 
@@ -15,6 +19,7 @@ public abstract class ModOption<T> {
     private final Text categoryName;
     private final Text optionName;
     private final Consumer<T> saveHandler;
+    private final Function<T, Text> nameProvider;
     private T state;
 
     protected ModOption(Text modName, Text categoryName, OptionFacade<T> facade) {
@@ -22,6 +27,7 @@ public abstract class ModOption<T> {
         this.categoryName = categoryName;
         this.optionName = facade.modcfg_getOptionName();
         this.saveHandler = facade.modcfg_getSaveHandler();
+        this.nameProvider = facade.modcfg_getNameProvider();
         this.state = facade.modcfg_getValue();
     }
 
@@ -89,6 +95,20 @@ public abstract class ModOption<T> {
         this.state = state;
         if(isStoredOptionValid()) {
             saveHandler.accept(state);
+        }
+    }
+
+    final Text getMergedMessageText() {
+        MutableText text = LiteralText.EMPTY.copy();
+        // fix RTL manually
+        if(MinecraftClient.getInstance().textRenderer.isRightToLeft()) {
+            return text.append(nameProvider.apply(state))
+                .append(": ")
+                .append(optionName);
+        } else {
+            return text.append(optionName)
+                .append(": ")
+                .append(nameProvider.apply(state));
         }
     }
 }

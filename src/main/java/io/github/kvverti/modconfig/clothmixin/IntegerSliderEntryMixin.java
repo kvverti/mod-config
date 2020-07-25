@@ -1,6 +1,7 @@
 package io.github.kvverti.modconfig.clothmixin;
 
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 import io.github.kvverti.modconfig.data.facade.IntOptionFacade;
 import me.shedaniel.clothconfig2.gui.entries.IntegerSliderEntry;
@@ -47,6 +48,11 @@ public abstract class IntegerSliderEntryMixin extends TooltipListEntry<Integer> 
     @Override
     public Integer modcfg_getValue() {
         return this.getValue();
+    }
+
+    @Override
+    public Function<Integer, Text> modcfg_getNameProvider() {
+        return value -> Text.method_30163(value.toString());
     }
 
     @Override

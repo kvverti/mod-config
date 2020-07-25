@@ -56,6 +56,11 @@ public abstract class SelectionListEntryMixin<T> extends TooltipListEntry<T> imp
     }
 
     @Override
+    public Function<T, Text> modcfg_getNameProvider() {
+        return nameProvider;
+    }
+
+    @Override
     public Consumer<T> modcfg_getSaveHandler() {
         return this.saveConsumer;
     }

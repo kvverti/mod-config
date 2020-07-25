@@ -1,6 +1,7 @@
 package io.github.kvverti.modconfig.clothmixin;
 
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 import io.github.kvverti.modconfig.data.facade.BooleanOptionFacade;
 import me.shedaniel.clothconfig2.gui.entries.BooleanListEntry;
@@ -9,6 +10,7 @@ import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 
+import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.text.Text;
 
 @Mixin(value = BooleanListEntry.class, remap = false)
@@ -30,6 +32,11 @@ public abstract class BooleanListEntryMixin extends TooltipListEntry<Boolean> im
     @Override
     public Boolean modcfg_getValue() {
         return this.getValue();
+    }
+
+    @Override
+    public Function<Boolean, Text> modcfg_getNameProvider() {
+        return value -> value ? ScreenTexts.ON : ScreenTexts.OFF;
     }
 
     @Override
