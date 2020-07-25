@@ -108,10 +108,8 @@ class SettingsModOptionsEntry extends ModOptionsEntry {
 
     @Override
     public boolean mouseDragged(double mouseX, double mouseY, int button, double deltaX, double deltaY) {
-        if(this.button1.isMouseOver(mouseX, mouseY)) {
-            return this.button1.mouseDragged(mouseX, mouseY, button, deltaX, deltaY);
-        } else if(this.button2 != null && this.button2.isMouseOver(mouseX, mouseY)) {
-            return this.button2.mouseDragged(mouseX, mouseY, button, deltaX, deltaY);
+        if(focused != null) {
+            return focused.mouseDragged(mouseX, mouseY, button, deltaX, deltaY);
         } else {
             return false;
         }
