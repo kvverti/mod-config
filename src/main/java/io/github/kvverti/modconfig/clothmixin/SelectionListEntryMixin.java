@@ -1,6 +1,5 @@
 package io.github.kvverti.modconfig.clothmixin;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -33,16 +32,6 @@ public abstract class SelectionListEntryMixin<T> extends TooltipListEntry<T> imp
     @Override
     public List<T> modcfg_getStates() {
         return this.values;
-    }
-
-    @Override
-    public List<Text> modcfg_getStateNames() {
-        Function<T, Text> nameProvider = this.nameProvider;
-        List<Text> stateNames = new ArrayList<>();
-        for(T t : this.values) {
-            stateNames.add(nameProvider.apply(t));
-        }
-        return stateNames;
     }
 
     @Override
