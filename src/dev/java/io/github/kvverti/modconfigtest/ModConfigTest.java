@@ -36,6 +36,7 @@ public class ModConfigTest implements ModMenuApi {
                 .startIntSlider(new LiteralText("Int Slider"), intValue, 0, 7)
                 .setDefaultValue(3)
                 .setSaveConsumer(value -> intValue = value)
+                .setTextGetter(value -> new LiteralText(value.toString() + "px"))
                 .build());
             category.addEntry(builder.entryBuilder()
                 .startTextField(new LiteralText("Text Field"), strValue)

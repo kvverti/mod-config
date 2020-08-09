@@ -21,10 +21,13 @@ public abstract class IntegerSliderEntryMixin extends TooltipListEntry<Integer> 
     private int maximum;
 
     @Shadow
+    private Consumer<Integer> saveConsumer;
+
+    @Shadow
     public abstract Integer getValue();
 
     @Shadow
-    private Consumer<Integer> saveConsumer;
+    public abstract Function<Integer, Text> getTextGetter();
 
     private IntegerSliderEntryMixin() {
         super(null, null);
@@ -52,7 +55,7 @@ public abstract class IntegerSliderEntryMixin extends TooltipListEntry<Integer> 
 
     @Override
     public Function<Integer, Text> modcfg_getNameProvider() {
-        return value -> Text.method_30163(value.toString());
+        return this.getTextGetter();
     }
 
     @Override
