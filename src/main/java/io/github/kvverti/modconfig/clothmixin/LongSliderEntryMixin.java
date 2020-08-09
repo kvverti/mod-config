@@ -4,32 +4,32 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 
 import io.github.kvverti.modconfig.data.facade.IntOptionFacade;
-import me.shedaniel.clothconfig2.gui.entries.IntegerSliderEntry;
+import me.shedaniel.clothconfig2.gui.entries.LongSliderEntry;
 import me.shedaniel.clothconfig2.gui.entries.TooltipListEntry;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 
 import net.minecraft.text.Text;
 
-@Mixin(IntegerSliderEntry.class)
-public abstract class IntegerSliderEntryMixin extends TooltipListEntry<Integer> implements IntOptionFacade {
+@Mixin(LongSliderEntry.class)
+public abstract class LongSliderEntryMixin extends TooltipListEntry<Long> implements IntOptionFacade {
 
     @Shadow
-    private int minimum;
+    private long minimum;
 
     @Shadow
-    private int maximum;
+    private long maximum;
 
     @Shadow
-    private Consumer<Integer> saveConsumer;
+    private Consumer<Long> saveConsumer;
 
     @Shadow
-    private Function<Integer, Text> textGetter;
+    private Function<Long, Text> textGetter;
 
     @Shadow
-    public abstract Integer getValue();
+    public abstract Long getValue();
 
-    private IntegerSliderEntryMixin() {
+    private LongSliderEntryMixin() {
         super(null, null);
     }
 
@@ -50,18 +50,16 @@ public abstract class IntegerSliderEntryMixin extends TooltipListEntry<Integer> 
 
     @Override
     public Long modcfg_getValue() {
-        return this.getValue().longValue();
+        return this.getValue();
     }
 
     @Override
     public Function<Long, Text> modcfg_getNameProvider() {
-        Function<Integer, Text> f = this.textGetter;
-        return v -> f.apply(v.intValue());
+        return this.textGetter;
     }
 
     @Override
     public Consumer<Long> modcfg_getSaveHandler() {
-        Consumer<Integer> s = this.saveConsumer;
-        return v -> s.accept(v.intValue());
+        return this.saveConsumer;
     }
 }

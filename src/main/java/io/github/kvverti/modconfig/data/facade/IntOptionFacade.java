@@ -4,11 +4,11 @@ import io.github.kvverti.modconfig.data.option.IntModOption;
 
 import net.minecraft.text.Text;
 
-public interface IntOptionFacade extends OptionFacade<Integer> {
+public interface IntOptionFacade extends OptionFacade<Long> {
 
-    int modcfg_getMin();
+    long modcfg_getMin();
 
-    int modcfg_getMax();
+    long modcfg_getMax();
 
     @Override
     default IntModOption modcfg_createOption(Text modName, Text categoryName) {

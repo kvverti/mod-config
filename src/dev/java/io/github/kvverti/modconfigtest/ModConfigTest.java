@@ -14,6 +14,7 @@ public class ModConfigTest implements ModMenuApi {
     private boolean boolValue = false;
     private TestEnum enumValue = TestEnum.A;
     private int intValue = 3;
+    private long longValue = 0L;
     private String strValue = "hello";
     private int intFieldValue = 0;
 
@@ -37,6 +38,12 @@ public class ModConfigTest implements ModMenuApi {
                 .setDefaultValue(3)
                 .setSaveConsumer(value -> intValue = value)
                 .setTextGetter(value -> new LiteralText(value.toString() + "px"))
+                .build());
+            category.addEntry(builder.entryBuilder()
+                .startLongSlider(new LiteralText("Long Slider"), longValue, -200L, 200L)
+                .setDefaultValue(0L)
+                .setSaveConsumer(value -> longValue = value)
+                .setTextGetter(value -> new LiteralText(value.toString() + "%"))
                 .build());
             category.addEntry(builder.entryBuilder()
                 .startTextField(new LiteralText("Text Field"), strValue)

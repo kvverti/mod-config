@@ -8,6 +8,7 @@
     "BooleanListEntryMixin",
     "IntegerListEntryMixin",
     "IntegerSliderEntryMixin",
+    "LongSliderEntryMixin",
     "SelectionListEntryMixin",
     "StringListEntryMixin"
   ],

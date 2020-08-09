@@ -9,10 +9,10 @@ import net.minecraft.client.gui.widget.AbstractButtonWidget;
 import net.minecraft.client.gui.widget.SliderWidget;
 import net.minecraft.text.Text;
 
-public class IntModOption extends ModOption<Integer> {
+public class IntModOption extends ModOption<Long> {
 
-    private final int min;
-    private final int max;
+    private final long min;
+    private final long max;
 
     public IntModOption(Text modName, Text categoryName, IntOptionFacade facade) {
         super(modName, categoryName, facade);
@@ -28,7 +28,7 @@ public class IntModOption extends ModOption<Integer> {
     @Override
     public AbstractButtonWidget createWidget(Screen containing, int width, int height) {
         boolean rtl = MinecraftClient.getInstance().textRenderer.isRightToLeft();
-        double initialValue = (double)(this.getState() - min) / max;
+        double initialValue = (double)(this.getState() - min) / (max - min);
         if(rtl) {
             initialValue = 1.0 - initialValue;
         }
@@ -42,7 +42,7 @@ public class IntModOption extends ModOption<Integer> {
             protected void applyValue() {
                 double halfStep = 1.0 / (2 * (max - min));
                 double value = rtl ? 1.0 - this.value : this.value;
-                IntModOption.this.saveState((int)((value + halfStep) * max) + min);
+                IntModOption.this.saveState((long)((value + halfStep) * (max - min)) + min);
             }
 
             @Override
