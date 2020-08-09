@@ -25,5 +25,5 @@ public interface OptionFacade<T> {
 
     Consumer<T> modcfg_getSaveHandler();
 
-    ModOption<?> modcfg_createOption(Text modName, Text categoryName);
+    ModOption<T> modcfg_createOption(Text modName, Text categoryName);
 }
