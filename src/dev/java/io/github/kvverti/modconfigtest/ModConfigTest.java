@@ -4,8 +4,12 @@ import io.github.prospector.modmenu.api.ConfigScreenFactory;
 import io.github.prospector.modmenu.api.ModMenuApi;
 import me.shedaniel.clothconfig2.api.ConfigBuilder;
 import me.shedaniel.clothconfig2.api.ConfigCategory;
+import me.shedaniel.clothconfig2.impl.builders.DropdownMenuBuilder;
 
+import net.minecraft.item.Item;
+import net.minecraft.item.Items;
 import net.minecraft.text.LiteralText;
+import net.minecraft.util.registry.Registry;
 
 public class ModConfigTest implements ModMenuApi {
 
@@ -17,6 +21,7 @@ public class ModConfigTest implements ModMenuApi {
     private long longValue = 0L;
     private String strValue = "hello";
     private int intFieldValue = 0;
+    private Item itemValue = Items.ACACIA_BOAT;
 
     @Override
     public ConfigScreenFactory<?> getModConfigScreenFactory() {
@@ -56,6 +61,12 @@ public class ModConfigTest implements ModMenuApi {
                 .setMax(99)
                 .setDefaultValue(0)
                 .setSaveConsumer(value -> intFieldValue = value)
+                .build());
+            category.addEntry(builder.entryBuilder()
+                .startDropdownMenu(new LiteralText("Item Field"), Items.ACACIA_BOAT, DropdownMenuBuilder.TopCellElementBuilder.ITEM_FUNCTION)
+                .setDefaultValue(Items.ACACIA_BOAT)
+                .setSaveConsumer(value -> itemValue = value)
+                .setSelections(Registry.ITEM)
                 .build());
             builder.setSavingRunnable(() -> {
                 System.out.println(boolValue);
