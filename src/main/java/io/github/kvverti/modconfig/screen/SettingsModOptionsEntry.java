@@ -2,6 +2,8 @@ package io.github.kvverti.modconfig.screen;
 
 import javax.annotation.Nullable;
 
+import io.github.kvverti.modconfig.data.option.widget.OverlayRenderable;
+
 import net.minecraft.client.gui.widget.AbstractButtonWidget;
 import net.minecraft.client.util.math.MatrixStack;
 
@@ -128,6 +130,16 @@ class SettingsModOptionsEntry extends ModOptionsEntry {
             button2.y = y;
             button2.setWidth(entryWidth / 2 - (spacingH / 2));
             button2.render(matrices, mouseX, mouseY, tickDelta);
+        }
+    }
+
+    @Override
+    public void renderOverlay(MatrixStack matrices, int mouseX, int mouseY, float delta) {
+        if(button1 instanceof OverlayRenderable) {
+            ((OverlayRenderable)button1).renderOverlay(matrices, mouseX, mouseY, delta);
+        }
+        if(button2 instanceof OverlayRenderable) {
+            ((OverlayRenderable)button2).renderOverlay(matrices, mouseX, mouseY, delta);
         }
     }
 }

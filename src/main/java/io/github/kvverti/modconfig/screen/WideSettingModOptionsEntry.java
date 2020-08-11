@@ -1,5 +1,7 @@
 package io.github.kvverti.modconfig.screen;
 
+import io.github.kvverti.modconfig.data.option.widget.OverlayRenderable;
+
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.widget.AbstractButtonWidget;
@@ -41,6 +43,13 @@ public class WideSettingModOptionsEntry extends ModOptionsEntry {
             widget.drawTextWithShadow(matrices, textRenderer, label, posX - labelWidth, textY, 0xffffff);
         }
         widget.render(matrices, mouseX, mouseY, tickDelta);
+    }
+
+    @Override
+    public void renderOverlay(MatrixStack matrices, int mouseX, int mouseY, float delta) {
+        if(widget instanceof OverlayRenderable) {
+            ((OverlayRenderable)widget).renderOverlay(matrices, mouseX, mouseY, delta);
+        }
     }
 
     @Override

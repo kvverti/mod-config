@@ -122,6 +122,18 @@ class ModOptionsEntryList extends AlwaysSelectedEntryListWidget<ModOptionsEntry>
     }
 
     @Override
+    protected void renderList(MatrixStack matrixStack, int x, int j, int mouseX, int mouseY, float delta) {
+        super.renderList(matrixStack, x, j, mouseX, mouseY, delta);
+        for(int i = 0; i < this.getItemCount(); i++) {
+            int top = this.getRowTop(i);
+            int bottom = top + this.itemHeight;
+            if(bottom >= this.top && top <= this.bottom) {
+                this.getEntry(i).renderOverlay(matrixStack, mouseX, mouseY, delta);
+            }
+        }
+    }
+
+    @Override
     public boolean changeFocus(boolean lookForwards) {
         if(this.getItemCount() == 0) {
             return false;

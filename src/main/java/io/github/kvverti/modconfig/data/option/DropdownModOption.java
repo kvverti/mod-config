@@ -1,5 +1,8 @@
 package io.github.kvverti.modconfig.data.option;
 
+import java.util.List;
+import java.util.function.Function;
+
 import io.github.kvverti.modconfig.data.facade.DropdownFacade;
 import io.github.kvverti.modconfig.data.option.widget.DropdownWidget;
 
@@ -11,8 +14,13 @@ import net.minecraft.text.Text;
 
 public class DropdownModOption<T> extends ModOption<T> {
 
+    private final List<T> selections;
+    private final Function<T, Text> nameProvider;
+
     public DropdownModOption(Text modName, Text categoryName, DropdownFacade<T> facade) {
         super(modName, categoryName, facade);
+        this.selections = facade.modcfg_getSelections();
+        this.nameProvider = facade.modcfg_getNameProvider();
     }
 
     @Override
@@ -28,6 +36,6 @@ public class DropdownModOption<T> extends ModOption<T> {
     @Override
     public AbstractButtonWidget createWidget(Screen containing, int width, int height) {
         TextRenderer textRenderer = MinecraftClient.getInstance().textRenderer;
-        return new DropdownWidget(textRenderer, 0, 0, width, height, this.getOptionName());
+        return new DropdownWidget<>(textRenderer, selections, nameProvider, 0, 0, width, height, this.getOptionName());
     }
 }

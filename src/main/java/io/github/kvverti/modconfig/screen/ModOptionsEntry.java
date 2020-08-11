@@ -1,6 +1,7 @@
 package io.github.kvverti.modconfig.screen;
 
 import net.minecraft.client.gui.widget.AlwaysSelectedEntryListWidget;
+import net.minecraft.client.util.math.MatrixStack;
 
 /**
  * An entry in the mod config screen.
@@ -21,5 +22,8 @@ public abstract class ModOptionsEntry extends AlwaysSelectedEntryListWidget.Entr
      * Clears the focus from this entry. Idempotent.
      */
     public void clearFocus() {
+    }
+
+    public void renderOverlay(MatrixStack matrices, int mouseX, int mouseY, float delta) {
     }
 }
