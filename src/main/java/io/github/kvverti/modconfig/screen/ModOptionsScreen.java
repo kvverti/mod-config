@@ -17,6 +17,8 @@ public class ModOptionsScreen extends Screen {
     public static final int PADDING_H = 5;
     public static final int ROW_WIDTH = 310;
     public static final int SEARCH_FIELD_WIDTH = ROW_WIDTH - (TOP_BUTTON_WIDTH + PADDING_H);
+    public static final int LIST_AREA_TOP_OFFSET = 45;
+    public static final int LIST_AREA_BOTTOM_OFFSET = 32;
 
     private final Screen parent;
 
@@ -38,7 +40,7 @@ public class ModOptionsScreen extends Screen {
     @Override
     protected void init() {
         super.init();
-        this.entries = new ModOptionsEntryList(this, this.client, this.width, this.height, 45, this.height - 32, STANDARD_HEIGHT + PADDING_H);
+        this.entries = new ModOptionsEntryList(this, this.client, this.width, this.height, LIST_AREA_TOP_OFFSET, this.height - LIST_AREA_BOTTOM_OFFSET, STANDARD_HEIGHT + PADDING_H);
         TextFieldWidget searchField = this.addButton(new TextFieldWidget(
             this.textRenderer,
             (this.width / 2) - (ROW_WIDTH / 2),

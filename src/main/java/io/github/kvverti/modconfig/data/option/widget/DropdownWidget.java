@@ -4,6 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 
+import io.github.kvverti.modconfig.screen.ModOptionsScreen;
+
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.widget.AbstractButtonWidget;
@@ -54,14 +57,29 @@ public class DropdownWidget<T> extends AbstractButtonWidget implements OverlayRe
         dropdownButton.render(matrices, mouseX, mouseY, delta);
         dropdown.x = searchBoxX;
         dropdown.y = searchBox.y + searchBox.getHeight() + 1;
+        int dropdownHeight = getLineHeight(textRenderer) * DropdownListWidget.DISPLAYED_LINE_COUNT;
+        if(MinecraftClient.getInstance().currentScreen != null) {
+            int areaBottom = MinecraftClient.getInstance().currentScreen.height - ModOptionsScreen.LIST_AREA_BOTTOM_OFFSET;
+            if(dropdown.y + dropdownHeight > areaBottom) {
+                dropdown.y = searchBox.y - dropdownHeight;
+            }
+        }
         dropdown.setWidth(searchBoxWidth + DropdownListWidget.SCROLL_BAR_PADDING + DropdownListWidget.SCROLL_BAR_WIDTH);
+        dropdown.setHeight(dropdownHeight);
     }
 
     @Override
     public void renderOverlay(MatrixStack matrices, int mouseX, int mouseY, float delta) {
         if(dropdown.visible) {
             dropdown.render(matrices, mouseX, mouseY, delta);
+            // for some reason, rendering a single upward facing drop down causes text
+            // on some widgets to render in front of the drop down
+            dropdown.renderButton(matrices, mouseX, mouseY, delta);
         }
+    }
+
+    private static int getLineHeight(TextRenderer textRenderer) {
+        return textRenderer.fontHeight * 7 / 4;
     }
 
     private class DropdownListWidget extends AbstractButtonWidget {
@@ -69,6 +87,7 @@ public class DropdownWidget<T> extends AbstractButtonWidget implements OverlayRe
         private static final int SCROLL_BAR_WIDTH = 5;
         private static final int SCROLL_BAR_PADDING = 4;
         private static final int SCROLL_BAR_HEIGHT = 20;
+        private static final int DISPLAYED_LINE_COUNT = 5;
 
         private final List<T> selections;
         private final Function<T, Text> nameProvider;
@@ -85,12 +104,14 @@ public class DropdownWidget<T> extends AbstractButtonWidget implements OverlayRe
             this.scrollIdx = 3;
         }
 
+        public void setHeight(int height) {
+            this.height = height;
+        }
+
         @Override
         public void renderButton(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-            final int displayedCount = 6;
             TextRenderer textRenderer = DropdownWidget.this.textRenderer;
-            int lineHeight = textRenderer.fontHeight * 7 / 4;
-            this.height = lineHeight * displayedCount;
+            int lineHeight = getLineHeight(textRenderer);
             int bgx0 = this.x;
             int bgy0 = this.y;
             int bgx1 = bgx0 + this.width - SCROLL_BAR_WIDTH - SCROLL_BAR_PADDING;
@@ -99,11 +120,12 @@ public class DropdownWidget<T> extends AbstractButtonWidget implements OverlayRe
             DrawableHelper.fill(matrices, bgx0 - 1, bgy0 - 1, bgx1 + 1, bgy1 + 1, -6250336);
             DrawableHelper.fill(matrices, bgx0, bgy0, bgx1, bgy1, 0xff000000);
             // render selections
-            int endIdx = Math.min(selections.size(), scrollIdx + displayedCount);
+            int endIdx = Math.min(selections.size(), scrollIdx + DISPLAYED_LINE_COUNT);
             for(int i = scrollIdx; i < endIdx; i++) {
                 int y = this.y + lineHeight * (i - scrollIdx);
                 if(i == selectedIndex) {
                     int sx0 = bgx0 - 1;
+                    @SuppressWarnings("UnnecessaryLocalVariable")
                     int sy0 = y;
                     int sx1 = bgx1 + 1;
                     int sy1 = y + lineHeight;
