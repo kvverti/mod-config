@@ -54,7 +54,7 @@ public class DropdownWidget<T> extends AbstractButtonWidget implements OverlayRe
         dropdownButton.render(matrices, mouseX, mouseY, delta);
         dropdown.x = searchBoxX;
         dropdown.y = searchBox.y + searchBox.getHeight() + 1;
-        dropdown.setWidth(searchBoxWidth + PADDING_H + DropdownListWidget.SCROLL_BAR_WIDTH);
+        dropdown.setWidth(searchBoxWidth + DropdownListWidget.SCROLL_BAR_PADDING + DropdownListWidget.SCROLL_BAR_WIDTH);
     }
 
     @Override
@@ -67,6 +67,7 @@ public class DropdownWidget<T> extends AbstractButtonWidget implements OverlayRe
     private class DropdownListWidget extends AbstractButtonWidget {
 
         private static final int SCROLL_BAR_WIDTH = 5;
+        private static final int SCROLL_BAR_PADDING = 4;
         private static final int SCROLL_BAR_HEIGHT = 20;
 
         private final List<T> selections;
@@ -92,7 +93,7 @@ public class DropdownWidget<T> extends AbstractButtonWidget implements OverlayRe
             this.height = lineHeight * displayedCount;
             int bgx0 = this.x;
             int bgy0 = this.y;
-            int bgx1 = bgx0 + this.width - SCROLL_BAR_WIDTH - PADDING_H;
+            int bgx1 = bgx0 + this.width - SCROLL_BAR_WIDTH - SCROLL_BAR_PADDING;
             int bgy1 = bgy0 + this.height;
             // render background
             DrawableHelper.fill(matrices, bgx0 - 1, bgy0 - 1, bgx1 + 1, bgy1 + 1, -6250336);
@@ -109,15 +110,26 @@ public class DropdownWidget<T> extends AbstractButtonWidget implements OverlayRe
                     DrawableHelper.fill(matrices, sx0 - 1, sy0 - 1, sx1 + 1, sy1 + 1, 0xffffffff);
                     DrawableHelper.fill(matrices, sx0, sy0, sx1, sy1, 0xff000000);
                 }
-                int textX = this.x + 2;
+                Text name = nameProvider.apply(suggestedSelections.get(i));
+                int textX;
+                if(textRenderer.isRightToLeft()) {
+                    textX = bgx1 - 2 - (int)textRenderer.getTextHandler().getWidth(name);
+                } else {
+                    textX = bgx0 + 2;
+                }
                 int textY = y + (lineHeight / 4);
-                this.drawTextWithShadow(matrices, textRenderer, nameProvider.apply(suggestedSelections.get(i)), textX, textY, 0xffffffff);
+                this.drawTextWithShadow(matrices, textRenderer, name, textX, textY, 0xffffffff);
             }
             // render scroll bar
             float scrollPos = (float)scrollIdx / selections.size();
-            int scrollX0 = bgx1 + PADDING_H;
-            int scrollY0 = (int)(scrollPos * (bgy1 - SCROLL_BAR_HEIGHT) + (1 - scrollPos) * bgy0);
+            int scrollX0;
+            if(textRenderer.isRightToLeft()) {
+                scrollX0 = bgx0 - SCROLL_BAR_PADDING - SCROLL_BAR_WIDTH;
+            } else {
+                scrollX0 = bgx1 + SCROLL_BAR_PADDING;
+            }
             int scrollX1 = scrollX0 + SCROLL_BAR_WIDTH;
+            int scrollY0 = (int)(scrollPos * (bgy1 - SCROLL_BAR_HEIGHT) + (1 - scrollPos) * bgy0);
             int scrollY1 = scrollY0 + SCROLL_BAR_HEIGHT;
             DrawableHelper.fill(matrices, scrollX0, scrollY0, scrollX1, scrollY1, 0xffaaaaaa);
         }
