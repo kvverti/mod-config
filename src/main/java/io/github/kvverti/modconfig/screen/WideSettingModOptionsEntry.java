@@ -54,16 +54,18 @@ public class WideSettingModOptionsEntry extends ModOptionsEntry {
     }
 
     @Override
+    public boolean setFocusedColumn(int col) {
+        clearFocus();
+        return widget.changeFocus(true);
+    }
+
+    @Override
     public void clearFocus() {
         ((ClearFocus)widget).modcfg_clearFocus();
     }
 
     @Override
     public boolean changeFocus(boolean lookForwards) {
-        if(!widget.isFocused()) {
-            // always iterate through the widget in the forward direction initially
-            lookForwards = true;
-        }
         return widget.changeFocus(lookForwards);
     }
 

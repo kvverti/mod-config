@@ -1,5 +1,6 @@
 package io.github.kvverti.modconfig.data.option.widget;
 
+import io.github.kvverti.modconfig.iface.ClearFocus;
 import io.github.kvverti.modconfig.screen.ModOptionsScreen;
 
 import net.minecraft.client.font.TextRenderer;
@@ -11,7 +12,7 @@ import net.minecraft.client.util.math.MatrixStack;
  * A half-width text field widget, for text field based integers, etc. where the input is expected to be
  * only a few characters.`
  */
-public class ShortTextFieldWidget extends AbstractButtonWidget {
+public class ShortTextFieldWidget extends AbstractButtonWidget implements ClearFocus {
 
     private final TextRenderer textRenderer;
     private final TextFieldWidget textField;
@@ -43,6 +44,12 @@ public class ShortTextFieldWidget extends AbstractButtonWidget {
 
     private void syncFocus() {
         this.setFocused(textField.isFocused());
+    }
+
+    @Override
+    public void modcfg_clearFocus() {
+        ((ClearFocus)textField).modcfg_clearFocus();
+        syncFocus();
     }
 
     @Override

@@ -19,6 +19,11 @@ public abstract class ModOptionsEntry extends AlwaysSelectedEntryListWidget.Entr
     }
 
     /**
+     * Sets the given column to be focused. Returns whether the column was focused.
+     */
+    public abstract boolean setFocusedColumn(int col);
+
+    /**
      * Clears the focus from this entry. Idempotent.
      */
     public void clearFocus() {

@@ -18,6 +18,11 @@ public class LabelModOptionsEntry extends ModOptionsEntry {
     }
 
     @Override
+    public boolean setFocusedColumn(int col) {
+        return false;
+    }
+
+    @Override
     public void render(MatrixStack matrices, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
         int width = renderer.getWidth(label);
         int posX = x + (entryWidth / 2) - (width / 2);

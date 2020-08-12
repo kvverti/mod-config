@@ -71,6 +71,20 @@ class SettingsModOptionsEntry extends ModOptionsEntry {
     }
 
     @Override
+    public boolean setFocusedColumn(int col) {
+        clearFocus();
+        if(col == 0) {
+            focused = button1;
+        } else if(col == 1) {
+            focused = button2;
+        }
+        if(focused != null) {
+            return focused.changeFocus(true);
+        }
+        return false;
+    }
+
+    @Override
     public void clearFocus() {
         if(focused != null) {
             ((ClearFocus)focused).modcfg_clearFocus();

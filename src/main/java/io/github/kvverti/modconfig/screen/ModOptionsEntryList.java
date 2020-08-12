@@ -95,7 +95,7 @@ class ModOptionsEntryList extends AlwaysSelectedEntryListWidget<ModOptionsEntry>
         if(idx >= 0 && idx < 2 * this.getItemCount()) {
             columnParity = idx % 2;
             ModOptionsEntry elem = this.getEntry(idx / 2);
-            elem.changeFocus(idx % 2 == 0);
+            elem.setFocusedColumn(idx % 2);
             this.setFocused(elem);
         } else {
             ModOptionsEntry elem = this.getFocused();
@@ -133,6 +133,25 @@ class ModOptionsEntryList extends AlwaysSelectedEntryListWidget<ModOptionsEntry>
         }
     }
 
+    private int shiftEntryIdx(int idx, boolean forward) {
+        int res = idx + (forward ? 1 : -1);
+        if(res >= this.getItemCount()) {
+            res = -1;
+        }
+        return res;
+    }
+
+    private void focusOnEntry(int idx) {
+        if(idx != -1) {
+            ModOptionsEntry entry = this.getEntry(idx);
+            this.setFocused(entry);
+            this.centerScrollOn(entry);
+        } else {
+            this.setFocused(null);
+        }
+        saveScreenState();
+    }
+
     @Override
     public boolean changeFocus(boolean lookForwards) {
         if(this.getItemCount() == 0) {
@@ -148,29 +167,18 @@ class ModOptionsEntryList extends AlwaysSelectedEntryListWidget<ModOptionsEntry>
         }
         boolean hasFocus = entry.changeFocus(lookForwards);
         while(!hasFocus && entryIdx != -1) {
-            entryIdx += lookForwards ? 1 : -1;
-            if(entryIdx >= this.getItemCount()) {
-                entryIdx = -1;
-            }
+            entryIdx = shiftEntryIdx(entryIdx, lookForwards);
             if(entryIdx != -1) {
                 entry = this.getEntry(entryIdx);
                 hasFocus = entry.changeFocus(lookForwards);
             }
         }
-        this.centerScrollOn(entry);
         int parity = entry.getFocusColumnParity();
         if(parity != -1) {
             columnParity = parity;
         }
-        if(entryIdx != -1) {
-            this.setFocused(entry);
-            saveScreenState();
-            return true;
-        } else {
-            this.setFocused(null);
-            saveScreenState();
-            return false;
-        }
+        focusOnEntry(entryIdx);
+        return entryIdx != -1;
     }
 
     @Override
@@ -185,35 +193,54 @@ class ModOptionsEntryList extends AlwaysSelectedEntryListWidget<ModOptionsEntry>
         } else if(keyCode == GLFW.GLFW_KEY_DOWN || keyCode == GLFW.GLFW_KEY_UP) {
             // up/down arrows
             boolean down = keyCode == GLFW.GLFW_KEY_DOWN;
-            if(this.getFocused() == null) {
-                this.changeFocus(down);
+            // navigating vertically should not change the parity
+            ModOptionsEntry oldEntry = this.getFocused();
+            int entryIdx;
+            if(oldEntry == null) {
+                entryIdx = down ? -1 : this.getItemCount();
             } else {
-                // navigating vertically should not change the parity
-                ModOptionsEntry prevFocused = this.getFocused();
-                int parity = prevFocused.getFocusColumnParity();
-                if(parity == -1) {
-                    parity = columnParity;
-                }
-                boolean done;
-                do {
-                    changeFocus(down);
-                    ModOptionsEntry focused = this.getFocused();
-                    if(focused != null) {
-                        int entryParity = focused.getFocusColumnParity();
-                        done = focused != prevFocused && (entryParity == -1 || entryParity == parity);
-                    } else {
-                        done = true;
-                    }
-                } while(!done);
-                // must reset the parity afterwards (as changeFocus() updates the parity)
-                columnParity = parity;
-                saveScreenState();
+                entryIdx = this.children().indexOf(oldEntry);
+                oldEntry.clearFocus();
             }
+            boolean done;
+            do {
+                entryIdx = shiftEntryIdx(entryIdx, down);
+                if(entryIdx != -1) {
+                    done = this.getEntry(entryIdx).setFocusedColumn(columnParity);
+                } else {
+                    done = true;
+                }
+            } while(!done);
+            focusOnEntry(entryIdx);
             return true;
         } else if(keyCode == GLFW.GLFW_KEY_RIGHT || keyCode == GLFW.GLFW_KEY_LEFT) {
             // left/right arrows (RTL is left-forward, LTR is right-forward)
             boolean forward = keyCode == (this.client.textRenderer.isRightToLeft() ? GLFW.GLFW_KEY_LEFT : GLFW.GLFW_KEY_RIGHT);
-            changeFocus(forward);
+            int entryIdx;
+            int col;
+            if(this.getFocused() == null) {
+                entryIdx = forward ? -1 : this.getItemCount();
+                col = forward ? 1 : 0;
+            } else {
+                ModOptionsEntry entry = this.getFocused();
+                entryIdx = this.children().indexOf(entry);
+                col = columnParity;
+                entry.clearFocus();
+            }
+            boolean done;
+            do {
+                if(forward == (col == 1)) {
+                    entryIdx = shiftEntryIdx(entryIdx, forward);
+                }
+                col ^= 1;
+                if(entryIdx != -1) {
+                    done = this.getEntry(entryIdx).setFocusedColumn(col);
+                } else {
+                    done = true;
+                }
+            } while(!done);
+            focusOnEntry(entryIdx);
+            columnParity = col;
             return true;
         } else {
             // if the keypress scrolled the selection
