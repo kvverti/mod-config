@@ -42,6 +42,11 @@ public class DropdownWidget<T> extends AbstractButtonWidget implements OverlayRe
         this.dropdown = new DropdownListWidget(selections, nameProvider, x, y, width, height, title);
         this.dropdownButton = new ButtonWidget(x, y, width, height, new LiteralText(""), btn -> {
             dropdown.visible ^= true;
+            if(focused != null) {
+                focused.changeFocus(true);
+            }
+            dropdown.changeFocus(true);
+            focused = dropdown;
         });
         dropdown.visible = false;
         this.focused = null;
@@ -118,19 +123,11 @@ public class DropdownWidget<T> extends AbstractButtonWidget implements OverlayRe
             // searchBox -> dropdownButton | prev
             focused = lookForwards ? dropdownButton : null;
         } else if(focused == dropdownButton) {
-            // dropdownButton -> ???
-            if(lookForwards) {
-                // dropdownButton -> dropdown | next
-                focused = dropdown.visible ? dropdown : null;
-            } else {
-                // dropdownButton -> searchBox
-                focused = searchBox;
-            }
+            // dropdownButton -> next | searchBox
+            focused = lookForwards ? null : searchBox;
         } else if(focused == dropdown) {
-            if(!dropdown.isFocused()) {
-                // dropdown -> next | dropdownButton
-                focused = lookForwards ? null : dropdownButton;
-            }
+            // dropdown -> searchBox
+            focused = searchBox;
         } else {
             // prev/next -> this
             // dropdown is never open at this stage
@@ -152,6 +149,22 @@ public class DropdownWidget<T> extends AbstractButtonWidget implements OverlayRe
             return focused.keyPressed(keyCode, scanCode, modifiers);
         }
         return false;
+    }
+
+    @Override
+    public boolean charTyped(char chr, int keyCode) {
+        if(focused == dropdown) {
+            // prevent switching to the search bar when the drop down button is pressed using SPACE
+            if(chr == ' ') {
+                return false;
+            }
+            if(focused != null) {
+                focused.changeFocus(true);
+            }
+            focused = searchBox;
+            focused.changeFocus(true);
+        }
+        return searchBox.charTyped(chr, keyCode);
     }
 
     @Override
