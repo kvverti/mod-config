@@ -7,6 +7,7 @@ import javax.annotation.Nullable;
 
 import io.github.kvverti.modconfig.iface.ClearFocus;
 import io.github.kvverti.modconfig.screen.ModOptionsScreen;
+import org.lwjgl.glfw.GLFW;
 
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
@@ -128,6 +129,7 @@ public class DropdownWidget<T> extends AbstractButtonWidget implements OverlayRe
         } else if(focused == dropdown) {
             // dropdown -> searchBox
             focused = searchBox;
+            dropdown.visible = false;
         } else {
             // prev/next -> this
             // dropdown is never open at this stage
@@ -262,13 +264,47 @@ public class DropdownWidget<T> extends AbstractButtonWidget implements OverlayRe
         }
 
         /**
-         * Unselects, unfocues, and hides the drop down.
+         * Unselects, unfocuses, and hides the drop down.
          */
         public void reset() {
             this.selectedIndex = -1;
             this.scrollIdx = 0;
             this.setFocused(false);
             this.visible = false;
+        }
+
+        @Override
+        public boolean changeFocus(boolean lookForwards) {
+            boolean ret = super.changeFocus(lookForwards);
+            if(ret && selectedIndex < 0) {
+                selectedIndex = 0;
+                scrollIdx = 0;
+            }
+            return ret;
+        }
+
+        @Override
+        public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+            if(keyCode == GLFW.GLFW_KEY_DOWN) {
+                selectedIndex++;
+                if(selectedIndex >= selections.size()) {
+                    selectedIndex = 0;
+                    scrollIdx = 0;
+                } else if(selectedIndex - scrollIdx >= DISPLAYED_LINE_COUNT) {
+                    scrollIdx++;
+                }
+                return true;
+            } else if(keyCode == GLFW.GLFW_KEY_UP) {
+                selectedIndex--;
+                if(selectedIndex < 0) {
+                    selectedIndex = selections.size() - 1;
+                    scrollIdx = selections.size() - DISPLAYED_LINE_COUNT;
+                } else if(selectedIndex - scrollIdx < 0) {
+                    scrollIdx--;
+                }
+                return true;
+            }
+            return false;
         }
     }
 }
