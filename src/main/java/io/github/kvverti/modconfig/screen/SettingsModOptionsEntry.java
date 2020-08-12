@@ -3,6 +3,7 @@ package io.github.kvverti.modconfig.screen;
 import javax.annotation.Nullable;
 
 import io.github.kvverti.modconfig.data.option.widget.OverlayRenderable;
+import io.github.kvverti.modconfig.iface.ClearFocus;
 
 import net.minecraft.client.gui.widget.AbstractButtonWidget;
 import net.minecraft.client.util.math.MatrixStack;
@@ -72,9 +73,7 @@ class SettingsModOptionsEntry extends ModOptionsEntry {
     @Override
     public void clearFocus() {
         if(focused != null) {
-            while(focused.isFocused()) {
-                focused.changeFocus(true);
-            }
+            ((ClearFocus)focused).modcfg_clearFocus();
         }
         focused = null;
     }

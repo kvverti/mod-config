@@ -4,6 +4,7 @@
   "package": "io.github.kvverti.modconfig.mixin",
   "compatibilityLevel": "JAVA_8",
   "client": [
+    "AbstractButonWidgetMixin",
     "TitleAndPauseScreenMixin"
   ],
   "injectors": {

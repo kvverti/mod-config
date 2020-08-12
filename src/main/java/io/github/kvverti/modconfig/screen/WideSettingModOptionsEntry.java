@@ -1,6 +1,7 @@
 package io.github.kvverti.modconfig.screen;
 
 import io.github.kvverti.modconfig.data.option.widget.OverlayRenderable;
+import io.github.kvverti.modconfig.iface.ClearFocus;
 
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
@@ -54,9 +55,7 @@ public class WideSettingModOptionsEntry extends ModOptionsEntry {
 
     @Override
     public void clearFocus() {
-        while(widget.isFocused()) {
-            widget.changeFocus(true);
-        }
+        ((ClearFocus)widget).modcfg_clearFocus();
     }
 
     @Override

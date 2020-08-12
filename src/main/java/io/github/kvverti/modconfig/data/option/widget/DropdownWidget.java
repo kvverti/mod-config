@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.function.Function;
 import javax.annotation.Nullable;
 
+import io.github.kvverti.modconfig.iface.ClearFocus;
 import io.github.kvverti.modconfig.screen.ModOptionsScreen;
 
 import net.minecraft.client.MinecraftClient;
@@ -20,7 +21,7 @@ import net.minecraft.text.Text;
 /**
  * A searchable dropdown widget.
  */
-public class DropdownWidget<T> extends AbstractButtonWidget implements OverlayRenderable {
+public class DropdownWidget<T> extends AbstractButtonWidget implements OverlayRenderable, ClearFocus {
 
     /**
      * Horizontal padding between elements.
@@ -96,13 +97,14 @@ public class DropdownWidget<T> extends AbstractButtonWidget implements OverlayRe
         return textRenderer.fontHeight * 7 / 4;
     }
 
-    /**
-     * Run before this widget is unfocused, mainly used to hide the drop down.
-     */
-    private void prepareForUnfocus() {
+    @Override
+    public void modcfg_clearFocus() {
         dropdown.reset();
+        if(focused != null) {
+            ((ClearFocus)focused).modcfg_clearFocus();
+        }
         focused = null;
-        this.setFocused(false);
+        modcfg_super_clearFocus();
     }
 
     @Override
@@ -125,7 +127,6 @@ public class DropdownWidget<T> extends AbstractButtonWidget implements OverlayRe
                 focused = searchBox;
             }
         } else if(focused == dropdown) {
-            // dropdown -> ???
             if(!dropdown.isFocused()) {
                 // dropdown -> next | dropdownButton
                 focused = lookForwards ? null : dropdownButton;
@@ -136,12 +137,38 @@ public class DropdownWidget<T> extends AbstractButtonWidget implements OverlayRe
             focused = lookForwards ? searchBox : dropdownButton;
         }
         if(focused == null) {
-            prepareForUnfocus();
+            modcfg_clearFocus();
             return false;
         } else {
             focused.changeFocus(lookForwards);
+            this.onFocusedChanged(true);
         }
         return true;
+    }
+
+    @Override
+    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+        if(focused != null) {
+            return focused.keyPressed(keyCode, scanCode, modifiers);
+        }
+        return false;
+    }
+
+    @Override
+    public boolean mouseClicked(double mouseX, double mouseY, int button) {
+        if(dropdownButton.isMouseOver(mouseX, mouseY)) {
+            return dropdownButton.mouseClicked(mouseX, mouseY, button);
+        } else if(searchBox.isMouseOver(mouseX, mouseY)) {
+            if(focused != null) {
+                ((ClearFocus)focused).modcfg_clearFocus();
+            }
+            focused = searchBox;
+            this.setFocused(true);
+            return searchBox.mouseClicked(mouseX, mouseY, button);
+        } else if(dropdown.visible && dropdown.isMouseOver(mouseX, mouseY)) {
+            return dropdown.mouseClicked(mouseX, mouseY, button);
+        }
+        return false;
     }
 
     /**
