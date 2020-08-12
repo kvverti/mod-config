@@ -189,7 +189,8 @@ class ModOptionsEntryList extends AlwaysSelectedEntryListWidget<ModOptionsEntry>
                 this.changeFocus(down);
             } else {
                 // navigating vertically should not change the parity
-                int parity = this.getFocused().getFocusColumnParity();
+                ModOptionsEntry prevFocused = this.getFocused();
+                int parity = prevFocused.getFocusColumnParity();
                 if(parity == -1) {
                     parity = columnParity;
                 }
@@ -199,7 +200,7 @@ class ModOptionsEntryList extends AlwaysSelectedEntryListWidget<ModOptionsEntry>
                     ModOptionsEntry focused = this.getFocused();
                     if(focused != null) {
                         int entryParity = focused.getFocusColumnParity();
-                        done = entryParity == -1 || entryParity == parity;
+                        done = focused != prevFocused && (entryParity == -1 || entryParity == parity);
                     } else {
                         done = true;
                     }

@@ -3,6 +3,7 @@ package io.github.kvverti.modconfig.data.option.widget;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
+import javax.annotation.Nullable;
 
 import io.github.kvverti.modconfig.screen.ModOptionsScreen;
 
@@ -16,23 +17,33 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 
+/**
+ * A searchable dropdown widget.
+ */
 public class DropdownWidget<T> extends AbstractButtonWidget implements OverlayRenderable {
 
+    /**
+     * Horizontal padding between elements.
+     */
     private static final int PADDING_H = 2;
 
     private final TextRenderer textRenderer;
     private final TextFieldWidget searchBox;
-    private final AbstractButtonWidget dropdownButton;
+    private final ButtonWidget dropdownButton;
     private final DropdownListWidget dropdown;
+    @Nullable
+    private AbstractButtonWidget focused;
 
     public DropdownWidget(TextRenderer textRenderer, List<T> selections, Function<T, Text> nameProvider, int x, int y, int width, int height, Text title) {
         super(x, y, width, height, title);
         this.textRenderer = textRenderer;
         this.searchBox = new TextFieldWidget(textRenderer, x, y, width, height, title);
-        this.dropdownButton = new ButtonWidget(x, y, width, height, new LiteralText(""), btn -> {
-        });
         this.dropdown = new DropdownListWidget(selections, nameProvider, x, y, width, height, title);
-        dropdown.visible = true;
+        this.dropdownButton = new ButtonWidget(x, y, width, height, new LiteralText(""), btn -> {
+            dropdown.visible ^= true;
+        });
+        dropdown.visible = false;
+        this.focused = null;
     }
 
     @Override
@@ -78,10 +89,64 @@ public class DropdownWidget<T> extends AbstractButtonWidget implements OverlayRe
         }
     }
 
+    /**
+     * The height, in pixels, of each line in the drop down menu.
+     */
     private static int getLineHeight(TextRenderer textRenderer) {
         return textRenderer.fontHeight * 7 / 4;
     }
 
+    /**
+     * Run before this widget is unfocused, mainly used to hide the drop down.
+     */
+    private void prepareForUnfocus() {
+        dropdown.reset();
+        focused = null;
+        this.setFocused(false);
+    }
+
+    @Override
+    public boolean changeFocus(boolean lookForwards) {
+        if(focused != null) {
+            focused.changeFocus(lookForwards);
+        } else {
+            this.setFocused(true);
+        }
+        if(focused == searchBox) {
+            // searchBox -> dropdownButton | prev
+            focused = lookForwards ? dropdownButton : null;
+        } else if(focused == dropdownButton) {
+            // dropdownButton -> ???
+            if(lookForwards) {
+                // dropdownButton -> dropdown | next
+                focused = dropdown.visible ? dropdown : null;
+            } else {
+                // dropdownButton -> searchBox
+                focused = searchBox;
+            }
+        } else if(focused == dropdown) {
+            // dropdown -> ???
+            if(!dropdown.isFocused()) {
+                // dropdown -> next | dropdownButton
+                focused = lookForwards ? null : dropdownButton;
+            }
+        } else {
+            // prev/next -> this
+            // dropdown is never open at this stage
+            focused = lookForwards ? searchBox : dropdownButton;
+        }
+        if(focused == null) {
+            prepareForUnfocus();
+            return false;
+        } else {
+            focused.changeFocus(lookForwards);
+        }
+        return true;
+    }
+
+    /**
+     * The actial drop down menu widget.
+     */
     private class DropdownListWidget extends AbstractButtonWidget {
 
         private static final int SCROLL_BAR_WIDTH = 5;
@@ -154,6 +219,16 @@ public class DropdownWidget<T> extends AbstractButtonWidget implements OverlayRe
             int scrollY0 = (int)(scrollPos * (bgy1 - SCROLL_BAR_HEIGHT) + (1 - scrollPos) * bgy0);
             int scrollY1 = scrollY0 + SCROLL_BAR_HEIGHT;
             DrawableHelper.fill(matrices, scrollX0, scrollY0, scrollX1, scrollY1, 0xffaaaaaa);
+        }
+
+        /**
+         * Unselects, unfocues, and hides the drop down.
+         */
+        public void reset() {
+            this.selectedIndex = -1;
+            this.scrollIdx = 0;
+            this.setFocused(false);
+            this.visible = false;
         }
     }
 }
