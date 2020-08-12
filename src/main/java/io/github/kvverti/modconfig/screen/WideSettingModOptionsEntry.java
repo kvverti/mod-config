@@ -54,13 +54,17 @@ public class WideSettingModOptionsEntry extends ModOptionsEntry {
 
     @Override
     public void clearFocus() {
-        if(widget.isFocused()) {
+        while(widget.isFocused()) {
             widget.changeFocus(true);
         }
     }
 
     @Override
     public boolean changeFocus(boolean lookForwards) {
+        if(!widget.isFocused()) {
+            // always iterate through the widget in the forward direction initially
+            lookForwards = true;
+        }
         return widget.changeFocus(lookForwards);
     }
 

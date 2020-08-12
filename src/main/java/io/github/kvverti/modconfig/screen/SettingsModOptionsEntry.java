@@ -71,8 +71,10 @@ class SettingsModOptionsEntry extends ModOptionsEntry {
 
     @Override
     public void clearFocus() {
-        if(focused != null && focused.isFocused()) {
-            focused.changeFocus(true);
+        if(focused != null) {
+            while(focused.isFocused()) {
+                focused.changeFocus(true);
+            }
         }
         focused = null;
     }
