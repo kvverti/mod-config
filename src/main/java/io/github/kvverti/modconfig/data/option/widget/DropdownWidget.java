@@ -43,11 +43,13 @@ public class DropdownWidget<T> extends AbstractButtonWidget implements OverlayRe
         this.dropdown = new DropdownListWidget(selections, nameProvider, x, y, width, height, title);
         this.dropdownButton = new ButtonWidget(x, y, width, height, new LiteralText(""), btn -> {
             dropdown.visible ^= true;
-            if(focused != null) {
-                focused.changeFocus(true);
+            if(dropdown.visible) {
+                if(focused != null) {
+                    focused.changeFocus(true);
+                }
+                dropdown.changeFocus(true);
+                focused = dropdown;
             }
-            dropdown.changeFocus(true);
-            focused = dropdown;
         });
         dropdown.visible = false;
         this.focused = null;
@@ -314,8 +316,13 @@ public class DropdownWidget<T> extends AbstractButtonWidget implements OverlayRe
 
         @Override
         public boolean mouseClicked(double mouseX, double mouseY, int button) {
-            System.out.println("egwfgiwegfygewfyiwegf");
-            return true;
+            int offsetIdx = (int)(mouseY - this.y) / getLineHeight(DropdownWidget.this.textRenderer);
+            int absoluteIdx = offsetIdx + scrollIdx;
+            if(absoluteIdx < selections.size()) {
+                selectedIndex = absoluteIdx;
+                return true;
+            }
+            return false;
         }
     }
 }
