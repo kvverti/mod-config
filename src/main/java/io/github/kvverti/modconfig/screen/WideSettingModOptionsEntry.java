@@ -91,4 +91,9 @@ public class WideSettingModOptionsEntry extends ModOptionsEntry {
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
         return widget.mouseClicked(mouseX, mouseY, button);
     }
+
+    @Override
+    public boolean mouseScrolled(double mouseX, double mouseY, double amount) {
+        return widget.mouseScrolled(mouseX, mouseY, amount);
+    }
 }

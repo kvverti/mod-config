@@ -268,6 +268,9 @@ public class ModOptionsEntryList extends AlwaysSelectedEntryListWidget<ModOption
 
     @Override
     public boolean mouseScrolled(double mouseX, double mouseY, double amount) {
+        if(this.getFocused() != null && this.getFocused().mouseScrolled(mouseX, mouseY, amount)) {
+            return true;
+        }
         boolean ret = super.mouseScrolled(mouseX, mouseY, amount);
         saveScreenState();
         return ret;

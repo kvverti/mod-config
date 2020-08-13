@@ -123,8 +123,8 @@ public class DropdownWidget<T> extends AbstractButtonWidget implements OverlayRe
             this.setFocused(true);
         }
         if(focused == searchBox) {
-            // searchBox -> dropdownButton | prev
-            focused = lookForwards ? dropdownButton : null;
+            // searchBox -> (dropdownButton | dropdown) | prev
+            focused = lookForwards ? (dropdown.visible ? dropdown : dropdownButton) : null;
         } else if(focused == dropdownButton) {
             // dropdownButton -> next | searchBox
             focused = lookForwards ? null : searchBox;
@@ -189,6 +189,14 @@ public class DropdownWidget<T> extends AbstractButtonWidget implements OverlayRe
             return searchBox.mouseClicked(mouseX, mouseY, button);
         } else if(dropdown.visible && dropdown.isMouseOver(mouseX, mouseY)) {
             return dropdown.mouseClicked(mouseX, mouseY, button);
+        }
+        return false;
+    }
+
+    @Override
+    public boolean mouseScrolled(double mouseX, double mouseY, double amount) {
+        if(dropdown.visible && dropdown.isMouseOver(mouseX, mouseY)) {
+            return dropdown.mouseScrolled(mouseX, mouseY, amount);
         }
         return false;
     }
@@ -323,6 +331,19 @@ public class DropdownWidget<T> extends AbstractButtonWidget implements OverlayRe
                 return true;
             }
             return false;
+        }
+
+        @Override
+        public boolean mouseScrolled(double mouseX, double mouseY, double amount) {
+            int scrollToIdx = scrollIdx - (int)(amount / 8.0 * getLineHeight(DropdownWidget.this.textRenderer));
+            if(scrollToIdx < 0) {
+                scrollIdx = 0;
+            } else if(scrollToIdx >= selections.size() - DISPLAYED_LINE_COUNT) {
+                scrollIdx = selections.size() - DISPLAYED_LINE_COUNT;
+            } else {
+                scrollIdx = scrollToIdx;
+            }
+            return true;
         }
     }
 }
