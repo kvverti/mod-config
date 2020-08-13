@@ -19,7 +19,7 @@ import net.minecraft.text.Text;
 /**
  * An entry list for mod options rows.
  */
-class ModOptionsEntryList extends AlwaysSelectedEntryListWidget<ModOptionsEntry> {
+public class ModOptionsEntryList extends AlwaysSelectedEntryListWidget<ModOptionsEntry> {
 
     private final ModOptionsScreen containingScreen;
     private final SearchableOptions allOptions = new SearchableOptions();

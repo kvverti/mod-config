@@ -5,6 +5,7 @@
   "compatibilityLevel": "JAVA_8",
   "client": [
     "AbstractButonWidgetMixin",
+    "EntryListWidgetMixin",
     "TitleAndPauseScreenMixin"
   ],
   "injectors": {

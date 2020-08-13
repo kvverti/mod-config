@@ -31,4 +31,12 @@ public abstract class ModOptionsEntry extends AlwaysSelectedEntryListWidget.Entr
 
     public void renderOverlay(MatrixStack matrices, int mouseX, int mouseY, float delta) {
     }
+
+    /**
+     * Determines whether the mouse is over the overlay for a widget. Overlays are on the front-most z plane
+     * and mask the widgets behind them.
+     */
+    public boolean isMouseOverOverlay(double mouseX, double mouseY) {
+        return false;
+    }
 }

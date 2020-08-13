@@ -80,6 +80,14 @@ public class WideSettingModOptionsEntry extends ModOptionsEntry {
     }
 
     @Override
+    public boolean isMouseOverOverlay(double mouseX, double mouseY) {
+        if(widget instanceof OverlayRenderable) {
+            return widget.isMouseOver(mouseX, mouseY);
+        }
+        return false;
+    }
+
+    @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
         return widget.mouseClicked(mouseX, mouseY, button);
     }

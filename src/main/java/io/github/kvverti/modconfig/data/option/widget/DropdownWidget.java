@@ -170,6 +170,11 @@ public class DropdownWidget<T> extends AbstractButtonWidget implements OverlayRe
     }
 
     @Override
+    public boolean isMouseOver(double mouseX, double mouseY) {
+        return super.isMouseOver(mouseX, mouseY) || (dropdown.visible && dropdown.isMouseOver(mouseX, mouseY));
+    }
+
+    @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
         if(dropdownButton.isMouseOver(mouseX, mouseY)) {
             return dropdownButton.mouseClicked(mouseX, mouseY, button);
@@ -187,7 +192,7 @@ public class DropdownWidget<T> extends AbstractButtonWidget implements OverlayRe
     }
 
     /**
-     * The actial drop down menu widget.
+     * The actual drop down menu widget.
      */
     private class DropdownListWidget extends AbstractButtonWidget {
 
@@ -305,6 +310,12 @@ public class DropdownWidget<T> extends AbstractButtonWidget implements OverlayRe
                 return true;
             }
             return false;
+        }
+
+        @Override
+        public boolean mouseClicked(double mouseX, double mouseY, int button) {
+            System.out.println("egwfgiwegfygewfyiwegf");
+            return true;
         }
     }
 }
