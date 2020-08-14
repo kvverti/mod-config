@@ -36,6 +36,15 @@ public class DropdownModOption<T> extends ModOption<T> {
     @Override
     public AbstractButtonWidget createWidget(Screen containing, int width, int height) {
         TextRenderer textRenderer = MinecraftClient.getInstance().textRenderer;
-        return new DropdownWidget<>(textRenderer, selections, nameProvider, 0, 0, width, height, this.getOptionName());
+        return new DropdownWidget<>(
+            textRenderer,
+            selections,
+            nameProvider,
+            0,
+            0, width,
+            height,
+            this.getOptionName(),
+            this.getState(),
+            this::saveState);
     }
 }

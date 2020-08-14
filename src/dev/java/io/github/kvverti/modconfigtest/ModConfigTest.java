@@ -63,7 +63,7 @@ public class ModConfigTest implements ModMenuApi {
                 .setSaveConsumer(value -> intFieldValue = value)
                 .build());
             category.addEntry(builder.entryBuilder()
-                .startDropdownMenu(new LiteralText("Item Field"), Items.ACACIA_BOAT, DropdownMenuBuilder.TopCellElementBuilder.ITEM_FUNCTION)
+                .startDropdownMenu(new LiteralText("Item Field"), itemValue, DropdownMenuBuilder.TopCellElementBuilder.ITEM_FUNCTION)
                 .setDefaultValue(Items.ACACIA_BOAT)
                 .setSaveConsumer(value -> itemValue = value)
                 .setSelections(Registry.ITEM)

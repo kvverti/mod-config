@@ -3,6 +3,7 @@ package io.github.kvverti.modconfig.data.option;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
+import io.github.kvverti.modconfig.data.TextUtil;
 import io.github.kvverti.modconfig.data.facade.OptionFacade;
 
 import net.minecraft.client.MinecraftClient;
@@ -44,27 +45,15 @@ public abstract class ModOption<T> {
     }
 
     public final String getLocalizedModName() {
-        if(modName instanceof TranslatableText) {
-            return I18n.translate(((TranslatableText)modName).getKey());
-        } else {
-            return modName.asString();
-        }
+        return TextUtil.localize(modName);
     }
 
     public final String getLocalizedCategoryName() {
-        if(categoryName instanceof TranslatableText) {
-            return I18n.translate(((TranslatableText)categoryName).getKey());
-        } else {
-            return categoryName.asString();
-        }
+        return TextUtil.localize(categoryName);
     }
 
     public final String getLocalizedOptionName() {
-        if(optionName instanceof TranslatableText) {
-            return I18n.translate(((TranslatableText)optionName).getKey());
-        } else {
-            return optionName.asString();
-        }
+        return TextUtil.localize(optionName);
     }
 
     /**

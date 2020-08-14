@@ -20,7 +20,6 @@ import io.github.prospector.modmenu.api.ModMenuApi;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.ModContainer;
 import net.fabricmc.loader.api.entrypoint.EntrypointContainer;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
@@ -101,8 +100,7 @@ public class SearchableOptions {
         List<ModOption<?>> found = new ArrayList<>();
         List<ModOption<?>> foundInCategory = new ArrayList<>();
         List<ModOption<?>> foundInMod = new ArrayList<>();
-        String localeStr = MinecraftClient.getInstance().getLanguageManager().getLanguage().getCode();
-        Locale locale = Locale.forLanguageTag(localeStr.replace("_", "-"));
+        Locale locale = TextUtil.getCurrentLocale();
         match = match.toLowerCase(locale);
         for(ModOption<?> option : modOptions) {
             if(option.getLocalizedOptionName().toLowerCase(locale).contains(match)) {

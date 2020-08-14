@@ -2,9 +2,12 @@ package io.github.kvverti.modconfig.data.option.widget;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import javax.annotation.Nullable;
 
+import io.github.kvverti.modconfig.data.TextUtil;
 import io.github.kvverti.modconfig.iface.ClearFocus;
 import io.github.kvverti.modconfig.screen.ModOptionsScreen;
 import org.lwjgl.glfw.GLFW;
@@ -36,11 +39,11 @@ public class DropdownWidget<T> extends AbstractButtonWidget implements OverlayRe
     @Nullable
     private AbstractButtonWidget focused;
 
-    public DropdownWidget(TextRenderer textRenderer, List<T> selections, Function<T, Text> nameProvider, int x, int y, int width, int height, Text title) {
+    public DropdownWidget(TextRenderer textRenderer, List<T> selections, Function<T, Text> nameProvider, int x, int y, int width, int height, Text title, T value, Consumer<T> saveHandler) {
         super(x, y, width, height, title);
         this.textRenderer = textRenderer;
         this.searchBox = new TextFieldWidget(textRenderer, x, y, width, height, title);
-        this.dropdown = new DropdownListWidget(selections, nameProvider, x, y, width, height, title);
+        this.dropdown = new DropdownListWidget(selections, nameProvider, saveHandler, x, y, width, height, title);
         this.dropdownButton = new ButtonWidget(x, y, width, height, new LiteralText(""), btn -> {
             dropdown.visible ^= true;
             if(dropdown.visible) {
@@ -51,6 +54,9 @@ public class DropdownWidget<T> extends AbstractButtonWidget implements OverlayRe
                 focused = dropdown;
             }
         });
+        searchBox.setText(TextUtil.localize(nameProvider.apply(value)));
+        searchBox.setChangedListener(dropdown::updateSuggestedSelections);
+        searchBox.setMaxLength(65536);
         dropdown.visible = false;
         this.focused = null;
     }
@@ -214,20 +220,51 @@ public class DropdownWidget<T> extends AbstractButtonWidget implements OverlayRe
         private final List<T> selections;
         private final Function<T, Text> nameProvider;
         private final List<T> suggestedSelections;
+        private final Consumer<T> saveHandler;
         private int selectedIndex;
         private int scrollIdx;
+        private boolean frozen;
 
-        public DropdownListWidget(List<T> selections, Function<T, Text> nameProvider, int x, int y, int width, int height, Text message) {
+        public DropdownListWidget(List<T> selections, Function<T, Text> nameProvider, Consumer<T> saveHandler, int x, int y, int width, int height, Text message) {
             super(x, y, width, height, message);
             this.selections = selections;
             this.nameProvider = nameProvider;
             this.suggestedSelections = new ArrayList<>(selections);
-            this.selectedIndex = 4;
-            this.scrollIdx = 3;
+            this.saveHandler = saveHandler;
+            this.selectedIndex = -1;
+            this.scrollIdx = 0;
+            this.frozen = false;
         }
 
         public void setHeight(int height) {
             this.height = height;
+        }
+
+        public void setSelectedIndex(int idx) {
+            assert idx >= 0 && idx < suggestedSelections.size() : "Index out of range: " + idx;
+            frozen = true;
+            selectedIndex = idx;
+            T value = suggestedSelections.get(idx);
+            DropdownWidget.this.searchBox.setText(TextUtil.localize(nameProvider.apply(value)));
+            saveHandler.accept(value);
+            frozen = false;
+        }
+
+        public void updateSuggestedSelections(String match) {
+            if(!frozen) {
+                suggestedSelections.clear();
+                selectedIndex = -1;
+                scrollIdx = 0;
+                Locale locale = TextUtil.getCurrentLocale();
+                match = match.toLowerCase(locale);
+                for(T value : selections) {
+                    String localizedName = TextUtil.localize(nameProvider.apply(value)).toLowerCase(locale);
+                    if(localizedName.contains(match)) {
+                        suggestedSelections.add(value);
+                    }
+                }
+                this.visible = !suggestedSelections.isEmpty() && !match.isEmpty();
+            }
         }
 
         @Override
@@ -242,7 +279,7 @@ public class DropdownWidget<T> extends AbstractButtonWidget implements OverlayRe
             DrawableHelper.fill(matrices, bgx0 - 1, bgy0 - 1, bgx1 + 1, bgy1 + 1, -6250336);
             DrawableHelper.fill(matrices, bgx0, bgy0, bgx1, bgy1, 0xff000000);
             // render selections
-            int endIdx = Math.min(selections.size(), scrollIdx + DISPLAYED_LINE_COUNT);
+            int endIdx = Math.min(suggestedSelections.size(), scrollIdx + DISPLAYED_LINE_COUNT);
             for(int i = scrollIdx; i < endIdx; i++) {
                 int y = this.y + lineHeight * (i - scrollIdx);
                 if(i == selectedIndex) {
@@ -265,7 +302,7 @@ public class DropdownWidget<T> extends AbstractButtonWidget implements OverlayRe
                 this.drawTextWithShadow(matrices, textRenderer, name, textX, textY, 0xffffffff);
             }
             // render scroll bar
-            float scrollPos = (float)scrollIdx / selections.size();
+            float scrollPos = (float)scrollIdx / suggestedSelections.size();
             int scrollX0;
             if(textRenderer.isRightToLeft()) {
                 scrollX0 = bgx0 - SCROLL_BAR_PADDING - SCROLL_BAR_WIDTH;
@@ -292,7 +329,6 @@ public class DropdownWidget<T> extends AbstractButtonWidget implements OverlayRe
         public boolean changeFocus(boolean lookForwards) {
             boolean ret = super.changeFocus(lookForwards);
             if(ret && selectedIndex < 0) {
-                selectedIndex = 0;
                 scrollIdx = 0;
             }
             return ret;
@@ -300,24 +336,28 @@ public class DropdownWidget<T> extends AbstractButtonWidget implements OverlayRe
 
         @Override
         public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-            if(keyCode == GLFW.GLFW_KEY_DOWN) {
-                selectedIndex++;
-                if(selectedIndex >= selections.size()) {
-                    selectedIndex = 0;
-                    scrollIdx = 0;
-                } else if(selectedIndex - scrollIdx >= DISPLAYED_LINE_COUNT) {
-                    scrollIdx++;
+            if(!suggestedSelections.isEmpty()) {
+                if(keyCode == GLFW.GLFW_KEY_DOWN) {
+                    int idx = selectedIndex + 1;
+                    if(idx >= suggestedSelections.size()) {
+                        idx = 0;
+                        scrollIdx = 0;
+                    } else if(idx - scrollIdx >= DISPLAYED_LINE_COUNT) {
+                        scrollIdx++;
+                    }
+                    setSelectedIndex(idx);
+                    return true;
+                } else if(keyCode == GLFW.GLFW_KEY_UP) {
+                    int idx = selectedIndex - 1;
+                    if(idx < 0) {
+                        idx = suggestedSelections.size() - 1;
+                        scrollIdx = suggestedSelections.size() - DISPLAYED_LINE_COUNT;
+                    } else if(idx - scrollIdx < 0) {
+                        scrollIdx--;
+                    }
+                    setSelectedIndex(idx);
+                    return true;
                 }
-                return true;
-            } else if(keyCode == GLFW.GLFW_KEY_UP) {
-                selectedIndex--;
-                if(selectedIndex < 0) {
-                    selectedIndex = selections.size() - 1;
-                    scrollIdx = selections.size() - DISPLAYED_LINE_COUNT;
-                } else if(selectedIndex - scrollIdx < 0) {
-                    scrollIdx--;
-                }
-                return true;
             }
             return false;
         }
@@ -326,8 +366,8 @@ public class DropdownWidget<T> extends AbstractButtonWidget implements OverlayRe
         public boolean mouseClicked(double mouseX, double mouseY, int button) {
             int offsetIdx = (int)(mouseY - this.y) / getLineHeight(DropdownWidget.this.textRenderer);
             int absoluteIdx = offsetIdx + scrollIdx;
-            if(absoluteIdx < selections.size()) {
-                selectedIndex = absoluteIdx;
+            if(absoluteIdx < suggestedSelections.size()) {
+                setSelectedIndex(absoluteIdx);
                 return true;
             }
             return false;
@@ -338,8 +378,8 @@ public class DropdownWidget<T> extends AbstractButtonWidget implements OverlayRe
             int scrollToIdx = scrollIdx - (int)(amount / 8.0 * getLineHeight(DropdownWidget.this.textRenderer));
             if(scrollToIdx < 0) {
                 scrollIdx = 0;
-            } else if(scrollToIdx >= selections.size() - DISPLAYED_LINE_COUNT) {
-                scrollIdx = selections.size() - DISPLAYED_LINE_COUNT;
+            } else if(scrollToIdx >= suggestedSelections.size() - DISPLAYED_LINE_COUNT) {
+                scrollIdx = suggestedSelections.size() - DISPLAYED_LINE_COUNT;
             } else {
                 scrollIdx = scrollToIdx;
             }
