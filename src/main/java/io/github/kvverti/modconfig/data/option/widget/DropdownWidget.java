@@ -393,10 +393,11 @@ public class DropdownWidget<T> extends AbstractButtonWidget implements OverlayRe
         @Override
         public boolean mouseScrolled(double mouseX, double mouseY, double amount) {
             int scrollToIdx = scrollIdx - (int)(amount / 8.0 * getLineHeight(DropdownWidget.this.textRenderer));
+            int scrollMax = Math.max(0, suggestedSelections.size() - DISPLAYED_LINE_COUNT);
             if(scrollToIdx < 0) {
                 scrollIdx = 0;
-            } else if(scrollToIdx >= suggestedSelections.size() - DISPLAYED_LINE_COUNT) {
-                scrollIdx = suggestedSelections.size() - DISPLAYED_LINE_COUNT;
+            } else if(scrollToIdx >= scrollMax) {
+                scrollIdx = scrollMax;
             } else {
                 scrollIdx = scrollToIdx;
             }
