@@ -228,7 +228,7 @@ public class DropdownWidget<T> extends AbstractButtonWidget implements OverlayRe
 
         private static final int SCROLL_BAR_WIDTH = 5;
         private static final int SCROLL_BAR_PADDING = 4;
-        private static final int SCROLL_BAR_HEIGHT = 20;
+        private static final int MIN_SCROLL_BAR_HEIGHT = 5;
         private static final int DISPLAYED_LINE_COUNT = 5;
 
         private final List<T> selections;
@@ -316,7 +316,8 @@ public class DropdownWidget<T> extends AbstractButtonWidget implements OverlayRe
                 this.drawTextWithShadow(matrices, textRenderer, name, textX, textY, 0xffffffff);
             }
             // render scroll bar
-            float scrollPos = (float)scrollIdx / suggestedSelections.size();
+            int scrollMax = Math.max(1, suggestedSelections.size() - DISPLAYED_LINE_COUNT);
+            float scrollPos = (float)scrollIdx / scrollMax;
             int scrollX0;
             if(textRenderer.isRightToLeft()) {
                 scrollX0 = bgx0 - SCROLL_BAR_PADDING - SCROLL_BAR_WIDTH;
@@ -324,8 +325,13 @@ public class DropdownWidget<T> extends AbstractButtonWidget implements OverlayRe
                 scrollX0 = bgx1 + SCROLL_BAR_PADDING;
             }
             int scrollX1 = scrollX0 + SCROLL_BAR_WIDTH;
-            int scrollY0 = (int)(scrollPos * (bgy1 - SCROLL_BAR_HEIGHT) + (1 - scrollPos) * bgy0);
-            int scrollY1 = scrollY0 + SCROLL_BAR_HEIGHT;
+            int scrollHeight = Math.min(bgy1 - bgy0, Math.max(MIN_SCROLL_BAR_HEIGHT, 2 * (bgy1 - bgy0) / scrollMax));
+            int maxNonFullScrollHeight = bgy1 - bgy0 - MIN_SCROLL_BAR_HEIGHT;
+            if(suggestedSelections.size() > DISPLAYED_LINE_COUNT && scrollHeight > maxNonFullScrollHeight) {
+                scrollHeight = maxNonFullScrollHeight;
+            }
+            int scrollY0 = (int)(scrollPos * (bgy1 - scrollHeight) + (1 - scrollPos) * bgy0);
+            int scrollY1 = scrollY0 + scrollHeight;
             DrawableHelper.fill(matrices, scrollX0, scrollY0, scrollX1, scrollY1, 0xffaaaaaa);
         }
 
