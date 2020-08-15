@@ -38,6 +38,7 @@ public class DropdownWidget<T> extends AbstractButtonWidget implements OverlayRe
     private final DropdownListWidget dropdown;
     @Nullable
     private AbstractButtonWidget focused;
+    private boolean dropdownOpenUp;
 
     public DropdownWidget(TextRenderer textRenderer, List<T> selections, Function<T, Text> nameProvider, int x, int y, int width, int height, Text title, T value, Consumer<T> saveHandler) {
         super(x, y, width, height, title);
@@ -59,6 +60,7 @@ public class DropdownWidget<T> extends AbstractButtonWidget implements OverlayRe
         searchBox.setMaxLength(65536);
         dropdown.visible = false;
         this.focused = null;
+        this.dropdownOpenUp = false;
     }
 
     @Override
@@ -83,11 +85,13 @@ public class DropdownWidget<T> extends AbstractButtonWidget implements OverlayRe
         dropdownButton.render(matrices, mouseX, mouseY, delta);
         dropdown.x = searchBoxX;
         dropdown.y = searchBox.y + searchBox.getHeight() + 1;
+        dropdownOpenUp = false;
         int dropdownHeight = getLineHeight(textRenderer) * DropdownListWidget.DISPLAYED_LINE_COUNT;
         if(MinecraftClient.getInstance().currentScreen != null) {
             int areaBottom = MinecraftClient.getInstance().currentScreen.height - ModOptionsScreen.LIST_AREA_BOTTOM_OFFSET;
             if(dropdown.y + dropdownHeight > areaBottom) {
                 dropdown.y = searchBox.y - dropdownHeight;
+                dropdownOpenUp = true;
             }
         }
         dropdown.setWidth(searchBoxWidth + DropdownListWidget.SCROLL_BAR_PADDING + DropdownListWidget.SCROLL_BAR_WIDTH);
@@ -156,6 +160,16 @@ public class DropdownWidget<T> extends AbstractButtonWidget implements OverlayRe
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
         if(focused != null) {
+            if(focused == searchBox && dropdown.visible) {
+                if((dropdownOpenUp && keyCode == GLFW.GLFW_KEY_UP) || (!dropdownOpenUp && keyCode == GLFW.GLFW_KEY_DOWN)) {
+                    ((ClearFocus)focused).modcfg_clearFocus();
+                    focused = dropdown;
+                    dropdown.changeFocus(true);
+                    // the dropdown always has at least one entry at this point
+                    dropdown.setSelectedIndex(0);
+                    return true;
+                }
+            }
             return focused.keyPressed(keyCode, scanCode, modifiers);
         }
         return false;
@@ -351,12 +365,15 @@ public class DropdownWidget<T> extends AbstractButtonWidget implements OverlayRe
                     int idx = selectedIndex - 1;
                     if(idx < 0) {
                         idx = suggestedSelections.size() - 1;
-                        scrollIdx = suggestedSelections.size() - DISPLAYED_LINE_COUNT;
+                        scrollIdx = Math.max(0, suggestedSelections.size() - DISPLAYED_LINE_COUNT);
                     } else if(idx - scrollIdx < 0) {
                         scrollIdx--;
                     }
                     setSelectedIndex(idx);
                     return true;
+                } else if(keyCode == GLFW.GLFW_KEY_ENTER) {
+                    // close drop down and 'select' current selection
+                    DropdownWidget.this.changeFocus(true);
                 }
             }
             return false;
