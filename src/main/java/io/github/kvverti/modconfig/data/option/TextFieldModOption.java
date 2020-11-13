@@ -39,11 +39,20 @@ public class TextFieldModOption extends ModOption<String> {
         widget.setMaxLength(maxLength);
         widget.setTextPredicate(textPredicate);
         widget.setText(this.getState());
-        widget.setChangedListener(this::saveState);
+        widget.setChangedListener(text -> onTextChanged(widget, text));
         if(isShort) {
             return new ShortTextFieldWidget(textRenderer, widget);
         } else {
             return widget;
+        }
+    }
+
+    private void onTextChanged(TextFieldWidget widget, String text) {
+        this.saveState(text);
+        if(validator.test(text)) {
+            widget.setEditableColor(0xCCCCCC);
+        } else {
+            widget.setEditableColor(0xff6655);
         }
     }
 
