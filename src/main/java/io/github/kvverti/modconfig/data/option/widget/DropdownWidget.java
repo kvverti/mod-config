@@ -56,11 +56,19 @@ public class DropdownWidget<T> extends AbstractButtonWidget implements OverlayRe
             }
         });
         searchBox.setText(TextUtil.localize(nameProvider.apply(value)));
-        searchBox.setChangedListener(dropdown::updateSuggestedSelections);
+        searchBox.setChangedListener(this::onSearchBoxTextChanged);
         searchBox.setMaxLength(65536);
         dropdown.visible = false;
         this.focused = null;
         this.dropdownOpenUp = false;
+    }
+
+    private void onSearchBoxTextChanged(String searchContents) {
+        if(dropdown.updateSuggestedSelections(searchContents)) {
+            searchBox.setEditableColor(0xCCCCCC);
+        } else {
+            searchBox.setEditableColor(0xff6655);
+        }
     }
 
     @Override
@@ -264,21 +272,40 @@ public class DropdownWidget<T> extends AbstractButtonWidget implements OverlayRe
             frozen = false;
         }
 
-        public void updateSuggestedSelections(String match) {
+        /**
+         * Updates the suggested selections, checking the match string against the selections.
+         *
+         * @param match The search text to match.
+         * @return true if there is a single exact match, false otherwise.
+         */
+        public boolean updateSuggestedSelections(String match) {
             if(!frozen) {
                 suggestedSelections.clear();
                 selectedIndex = -1;
                 scrollIdx = 0;
                 Locale locale = TextUtil.getCurrentLocale();
                 match = match.toLowerCase(locale);
+                T exactMatch = null;
                 for(T value : selections) {
                     String localizedName = TextUtil.localize(nameProvider.apply(value)).toLowerCase(locale);
                     if(localizedName.contains(match)) {
                         suggestedSelections.add(value);
                     }
+                    if(exactMatch == null && localizedName.equals(match)) {
+                        exactMatch = value;
+                    }
                 }
                 this.visible = !suggestedSelections.isEmpty() && !match.isEmpty();
+                // save the exact value if it exists
+                if(exactMatch != null) {
+                    saveHandler.accept(exactMatch);
+                    return true;
+                } else {
+                    return false;
+                }
             }
+            // assume a valid selection if we are not asked to search for one
+            return true;
         }
 
         @Override
