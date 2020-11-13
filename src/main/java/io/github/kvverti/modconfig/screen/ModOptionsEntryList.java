@@ -34,6 +34,10 @@ public class ModOptionsEntryList extends AlwaysSelectedEntryListWidget<ModOption
         addMods(mods, new LiteralText("Mods"));
     }
 
+    public void save() {
+        allOptions.saveOptions();
+    }
+
     public void search(String match) {
         this.setFocused(null);
         this.clearEntries();

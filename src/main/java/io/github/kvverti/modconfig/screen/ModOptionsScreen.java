@@ -111,6 +111,7 @@ public class ModOptionsScreen extends Screen {
 
     @Override
     public void onClose() {
+        entries.save();
         this.client.openScreen(this.parent);
     }
 }

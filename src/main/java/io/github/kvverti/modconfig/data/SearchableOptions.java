@@ -33,7 +33,15 @@ public class SearchableOptions {
      */
     private final List<ModOption<?>> mods = new ArrayList<>();
 
+    /**
+     * Individual mod options.
+     */
     private final List<ModOption<?>> options = new ArrayList<>();
+
+    /**
+     * Per-mod collective persistence callbacks.
+     */
+    private final List<Runnable> saveCallbacks = new ArrayList<>();
 
     public SearchableOptions() {
         reloadMods();
@@ -42,6 +50,7 @@ public class SearchableOptions {
     private void reloadMods() {
         mods.clear();
         options.clear();
+        saveCallbacks.clear();
         List<EntrypointContainer<ModMenuApi>> modMenuMods = FabricLoader.getInstance().getEntrypointContainers("modmenu", ModMenuApi.class);
         for(EntrypointContainer<ModMenuApi> container : modMenuMods) {
             {
@@ -69,7 +78,9 @@ public class SearchableOptions {
 
     private void scrapeOptions(Text modName, Screen screen) {
         if(screen instanceof ConfigFacade) {
-            Map<Text, List<OptionFacade<?>>> widgetsByCategory = ((ConfigFacade)screen).modcfg_getOptionsByCategory();
+            ConfigFacade facade = (ConfigFacade)screen;
+            saveCallbacks.add(facade.modcfg_persistCallback());
+            Map<Text, List<OptionFacade<?>>> widgetsByCategory = facade.modcfg_getOptionsByCategory();
             for(Map.Entry<Text, List<OptionFacade<?>>> entry : widgetsByCategory.entrySet()) {
                 Text categoryName = entry.getKey();
                 for(OptionFacade<?> configEntry : entry.getValue()) {
@@ -117,5 +128,11 @@ public class SearchableOptions {
         found.addAll(foundInCategory);
         found.addAll(foundInMod);
         return found;
+    }
+
+    public void saveOptions() {
+        for(Runnable callback : saveCallbacks) {
+            callback.run();
+        }
     }
 }

@@ -25,6 +25,9 @@ public abstract class AbstractConfigScreenMixin extends Screen implements Config
         super(null);
     }
 
+    @Shadow
+    public abstract void save();
+
     @Override
     public Map<Text, List<OptionFacade<?>>> modcfg_getOptionsByCategory() {
         Map<Text, List<OptionFacade<?>>> res = new HashMap<>();
@@ -38,5 +41,10 @@ public abstract class AbstractConfigScreenMixin extends Screen implements Config
             res.put(entry.getKey(), facades);
         }
         return res;
+    }
+
+    @Override
+    public Runnable modcfg_persistCallback() {
+        return this::save;
     }
 }

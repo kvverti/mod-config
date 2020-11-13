@@ -8,4 +8,6 @@ import net.minecraft.text.Text;
 public interface ConfigFacade {
 
     Map<Text, List<OptionFacade<?>>> modcfg_getOptionsByCategory();
+
+    Runnable modcfg_persistCallback();
 }
