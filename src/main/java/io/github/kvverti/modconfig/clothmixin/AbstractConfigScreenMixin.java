@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import javax.annotation.Nullable;
 
 import io.github.kvverti.modconfig.data.facade.ConfigFacade;
 import io.github.kvverti.modconfig.data.facade.OptionFacade;
@@ -19,14 +20,15 @@ import net.minecraft.text.Text;
 public abstract class AbstractConfigScreenMixin extends Screen implements ConfigFacade {
 
     @Shadow
+    @Nullable
+    private Runnable savingRunnable;
+
+    @Shadow
     public abstract Map<Text, List<AbstractConfigEntry<?>>> getCategorizedEntries();
 
     private AbstractConfigScreenMixin() {
         super(null);
     }
-
-    @Shadow
-    public abstract void save();
 
     @Override
     public Map<Text, List<OptionFacade<?>>> modcfg_getOptionsByCategory() {
@@ -45,6 +47,7 @@ public abstract class AbstractConfigScreenMixin extends Screen implements Config
 
     @Override
     public Runnable modcfg_persistCallback() {
-        return this::save;
+        return this.savingRunnable != null ? this.savingRunnable : () -> {
+        };
     }
 }

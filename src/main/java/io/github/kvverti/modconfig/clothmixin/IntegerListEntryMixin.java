@@ -45,10 +45,12 @@ public abstract class IntegerListEntryMixin extends TextFieldListEntry<Integer> 
 
     @Override
     public Predicate<String> modcfg_getValidator() {
+        int min = this.minimum;
+        int max = this.maximum;
         return value -> {
             try {
                 int i = Integer.parseInt(value);
-                return i >= this.minimum && i <= this.maximum;
+                return i >= min && i <= max;
             } catch(NumberFormatException e) {
                 return false;
             }
@@ -72,6 +74,7 @@ public abstract class IntegerListEntryMixin extends TextFieldListEntry<Integer> 
 
     @Override
     public Consumer<String> modcfg_getSaveHandler() {
-        return value -> this.saveConsumer.accept(Integer.parseInt(value));
+        Consumer<Integer> s = this.saveConsumer;
+        return value -> s.accept(Integer.parseInt(value));
     }
 }
