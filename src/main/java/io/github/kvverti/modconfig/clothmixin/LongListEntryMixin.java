@@ -4,36 +4,36 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 import io.github.kvverti.modconfig.data.facade.TextFieldOptionFacade;
-import me.shedaniel.clothconfig2.gui.entries.IntegerListEntry;
+import me.shedaniel.clothconfig2.gui.entries.LongListEntry;
 import me.shedaniel.clothconfig2.gui.entries.TextFieldListEntry;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 
 import net.minecraft.text.Text;
 
-@Mixin(IntegerListEntry.class)
-public abstract class IntegerListEntryMixin extends TextFieldListEntry<Integer> implements TextFieldOptionFacade {
+@Mixin(LongListEntry.class)
+public abstract class LongListEntryMixin extends TextFieldListEntry<Long> implements TextFieldOptionFacade {
 
     @Shadow
-    private int minimum;
+    private long minimum;
 
     @Shadow
-    private int maximum;
+    private long maximum;
 
     @Shadow
-    private Consumer<Integer> saveConsumer;
+    private Consumer<Long> saveConsumer;
 
     @Shadow
-    public abstract Integer getValue();
+    public abstract Long getValue();
 
-    private IntegerListEntryMixin() {
+    private LongListEntryMixin() {
         super(null, null, null, () -> null);
     }
 
     @Override
     public int modcfg_getMaxLength() {
-        // ten digits plus sign
-        return 11;
+        // 19 digits plus sign
+        return 20;
     }
 
     @Override
@@ -43,11 +43,11 @@ public abstract class IntegerListEntryMixin extends TextFieldListEntry<Integer> 
 
     @Override
     public Predicate<String> modcfg_getValidator() {
-        int min = this.minimum;
-        int max = this.maximum;
+        long min = this.minimum;
+        long max = this.maximum;
         return value -> {
             try {
-                int i = Integer.parseInt(value);
+                long i = Long.parseLong(value);
                 return i >= min && i <= max;
             } catch(NumberFormatException e) {
                 return false;
@@ -72,7 +72,7 @@ public abstract class IntegerListEntryMixin extends TextFieldListEntry<Integer> 
 
     @Override
     public Consumer<String> modcfg_getSaveHandler() {
-        Consumer<Integer> s = this.saveConsumer;
-        return value -> s.accept(Integer.parseInt(value));
+        Consumer<Long> s = this.saveConsumer;
+        return value -> s.accept(Long.parseLong(value));
     }
 }

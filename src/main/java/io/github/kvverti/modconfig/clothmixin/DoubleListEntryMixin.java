@@ -4,50 +4,50 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 import io.github.kvverti.modconfig.data.facade.TextFieldOptionFacade;
-import me.shedaniel.clothconfig2.gui.entries.IntegerListEntry;
+import me.shedaniel.clothconfig2.gui.entries.DoubleListEntry;
 import me.shedaniel.clothconfig2.gui.entries.TextFieldListEntry;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 
 import net.minecraft.text.Text;
 
-@Mixin(IntegerListEntry.class)
-public abstract class IntegerListEntryMixin extends TextFieldListEntry<Integer> implements TextFieldOptionFacade {
+@Mixin(DoubleListEntry.class)
+public abstract class DoubleListEntryMixin extends TextFieldListEntry<Double> implements TextFieldOptionFacade {
 
     @Shadow
-    private int minimum;
+    private double minimum;
 
     @Shadow
-    private int maximum;
+    private double maximum;
 
     @Shadow
-    private Consumer<Integer> saveConsumer;
+    private Consumer<Double> saveConsumer;
 
     @Shadow
-    public abstract Integer getValue();
+    public abstract Double getValue();
 
-    private IntegerListEntryMixin() {
+    private DoubleListEntryMixin() {
         super(null, null, null, () -> null);
     }
 
     @Override
     public int modcfg_getMaxLength() {
-        // ten digits plus sign
-        return 11;
+        // arbitrary but should fit all floating point values
+        return 100;
     }
 
     @Override
     public Predicate<String> modcfg_getTextPredicate() {
-        return value -> value.matches("[+-]?\\d*");
+        return value -> value.matches("[+-]?(\\d*\\.)?\\d*([eE][+-]?\\d{0,3})?");
     }
 
     @Override
     public Predicate<String> modcfg_getValidator() {
-        int min = this.minimum;
-        int max = this.maximum;
+        double min = this.minimum;
+        double max = this.maximum;
         return value -> {
             try {
-                int i = Integer.parseInt(value);
+                double i = Double.parseDouble(value);
                 return i >= min && i <= max;
             } catch(NumberFormatException e) {
                 return false;
@@ -72,7 +72,7 @@ public abstract class IntegerListEntryMixin extends TextFieldListEntry<Integer> 
 
     @Override
     public Consumer<String> modcfg_getSaveHandler() {
-        Consumer<Integer> s = this.saveConsumer;
-        return value -> s.accept(Integer.parseInt(value));
+        Consumer<Double> s = this.saveConsumer;
+        return value -> s.accept(Double.parseDouble(value));
     }
 }

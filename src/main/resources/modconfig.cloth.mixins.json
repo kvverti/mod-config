@@ -6,9 +6,11 @@
   "client": [
     "AbstractConfigScreenMixin",
     "BooleanListEntryMixin",
+    "DoubleListEntryMixin",
     "DropdownBoxEntryMixin",
     "IntegerListEntryMixin",
     "IntegerSliderEntryMixin",
+    "LongListEntryMixin",
     "LongSliderEntryMixin",
     "SelectionElementAccessor",
     "SelectionListEntryMixin",

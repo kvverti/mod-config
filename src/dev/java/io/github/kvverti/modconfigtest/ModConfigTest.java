@@ -19,6 +19,7 @@ public class ModConfigTest implements ModMenuApi {
     private TestEnum enumValue = TestEnum.A;
     private int intValue = 3;
     private long longValue = 0L;
+    private double doubleFieldValue = 0.0;
     private String strValue = "hello";
     private int intFieldValue = 0;
     private Item itemValue = Items.ACACIA_BOAT;
@@ -67,6 +68,13 @@ public class ModConfigTest implements ModMenuApi {
                 .setDefaultValue(Items.ACACIA_BOAT)
                 .setSaveConsumer(value -> itemValue = value)
                 .setSelections(Registry.ITEM)
+                .build());
+            category.addEntry(builder.entryBuilder()
+                .startDoubleField(new LiteralText("Double Field"), doubleFieldValue)
+                .setMin(-100.0)
+                .setMax(100.0)
+                .setDefaultValue(0.0)
+                .setSaveConsumer(value -> doubleFieldValue = value)
                 .build());
             builder.setSavingRunnable(() -> {
                 System.out.println(boolValue);
