@@ -19,11 +19,11 @@ import net.minecraft.text.Text;
 @Mixin(AbstractConfigScreen.class)
 public abstract class AbstractConfigScreenMixin extends Screen implements ConfigFacade {
 
-    @Shadow
+    @Shadow(remap = false)
     @Nullable
     private Runnable savingRunnable;
 
-    @Shadow
+    @Shadow(remap = false)
     public abstract Map<Text, List<AbstractConfigEntry<?>>> getCategorizedEntries();
 
     private AbstractConfigScreenMixin() {

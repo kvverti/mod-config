@@ -2,6 +2,8 @@ package io.github.kvverti.modconfig.screen;
 
 import net.minecraft.client.gui.widget.AlwaysSelectedEntryListWidget;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.text.LiteralText;
+import net.minecraft.text.Text;
 
 /**
  * An entry in the mod config screen.
@@ -38,5 +40,11 @@ public abstract class ModOptionsEntry extends AlwaysSelectedEntryListWidget.Entr
      */
     public boolean isMouseOverOverlay(double mouseX, double mouseY) {
         return false;
+    }
+
+    @Override
+    public Text getNarration() {
+        // todo
+        return new LiteralText("");
     }
 }

@@ -10,7 +10,7 @@ import io.github.kvverti.modconfig.data.option.ModOption;
 import org.lwjgl.glfw.GLFW;
 
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.widget.AbstractButtonWidget;
+import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.client.gui.widget.AlwaysSelectedEntryListWidget;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.LiteralText;
@@ -56,18 +56,18 @@ public class ModOptionsEntryList extends AlwaysSelectedEntryListWidget<ModOption
             this.addEntry(new LabelModOptionsEntry(this.client.textRenderer, title));
             for(Iterator<ModOption<?>> itr = mods.iterator(); itr.hasNext(); ) {
                 ModOption<?> option = itr.next();
-                AbstractButtonWidget left = option.createWidget(containingScreen, ModOptionsScreen.STANDARD_WIDTH, ModOptionsScreen.STANDARD_HEIGHT);
+                ClickableWidget left = option.createWidget(containingScreen, ModOptionsScreen.STANDARD_WIDTH, ModOptionsScreen.STANDARD_HEIGHT);
                 if(option.isFullWidth()) {
                     Text label = option.getOptionName();
                     this.addEntry(new WideSettingModOptionsEntry(label, left, this.client.textRenderer.isRightToLeft()));
                 } else {
-                    AbstractButtonWidget right;
+                    ClickableWidget right;
                     List<ModOptionsEntry> wideOptions = new ArrayList<>();
                     option = null;
                     // save wide options for after the second non-wide option; this prevents empty spaces in non-wide entries
                     while(itr.hasNext() && (option = itr.next()).isFullWidth()) {
                         Text label = option.getOptionName();
-                        AbstractButtonWidget widget = option.createWidget(containingScreen, ModOptionsScreen.STANDARD_WIDTH, ModOptionsScreen.STANDARD_HEIGHT);
+                        ClickableWidget widget = option.createWidget(containingScreen, ModOptionsScreen.STANDARD_WIDTH, ModOptionsScreen.STANDARD_HEIGHT);
                         wideOptions.add(new WideSettingModOptionsEntry(label, widget, this.client.textRenderer.isRightToLeft()));
                         option = null;
                     }
@@ -96,7 +96,7 @@ public class ModOptionsEntryList extends AlwaysSelectedEntryListWidget<ModOption
     }
 
     public void setFocusedIndex(int idx) {
-        if(idx >= 0 && idx < 2 * this.getItemCount()) {
+        if(idx >= 0 && idx < 2 * this.getEntryCount()) {
             columnParity = idx % 2;
             ModOptionsEntry elem = this.getEntry(idx / 2);
             elem.setFocusedColumn(idx % 2);
@@ -128,7 +128,7 @@ public class ModOptionsEntryList extends AlwaysSelectedEntryListWidget<ModOption
     @Override
     protected void renderList(MatrixStack matrixStack, int x, int j, int mouseX, int mouseY, float delta) {
         super.renderList(matrixStack, x, j, mouseX, mouseY, delta);
-        for(int i = 0; i < this.getItemCount(); i++) {
+        for(int i = 0; i < this.getEntryCount(); i++) {
             int top = this.getRowTop(i);
             int bottom = top + this.itemHeight;
             if(bottom >= this.top && top <= this.bottom) {
@@ -139,7 +139,7 @@ public class ModOptionsEntryList extends AlwaysSelectedEntryListWidget<ModOption
 
     private int shiftEntryIdx(int idx, boolean forward) {
         int res = idx + (forward ? 1 : -1);
-        if(res >= this.getItemCount()) {
+        if(res >= this.getEntryCount()) {
             res = -1;
         }
         return res;
@@ -158,13 +158,13 @@ public class ModOptionsEntryList extends AlwaysSelectedEntryListWidget<ModOption
 
     @Override
     public boolean changeFocus(boolean lookForwards) {
-        if(this.getItemCount() == 0) {
+        if(this.getEntryCount() == 0) {
             return false;
         }
         ModOptionsEntry entry = this.getFocused();
         int entryIdx;
         if(entry == null) {
-            entryIdx = lookForwards ? 0 : this.getItemCount() - 1;
+            entryIdx = lookForwards ? 0 : this.getEntryCount() - 1;
             entry = this.getEntry(entryIdx);
         } else {
             entryIdx = this.children().indexOf(entry);
@@ -201,7 +201,7 @@ public class ModOptionsEntryList extends AlwaysSelectedEntryListWidget<ModOption
             ModOptionsEntry oldEntry = this.getFocused();
             int entryIdx;
             if(oldEntry == null) {
-                entryIdx = down ? -1 : this.getItemCount();
+                entryIdx = down ? -1 : this.getEntryCount();
             } else {
                 entryIdx = this.children().indexOf(oldEntry);
                 oldEntry.clearFocus();
@@ -223,7 +223,7 @@ public class ModOptionsEntryList extends AlwaysSelectedEntryListWidget<ModOption
             int entryIdx;
             int col;
             if(this.getFocused() == null) {
-                entryIdx = forward ? -1 : this.getItemCount();
+                entryIdx = forward ? -1 : this.getEntryCount();
                 col = forward ? 1 : 0;
             } else {
                 ModOptionsEntry entry = this.getFocused();

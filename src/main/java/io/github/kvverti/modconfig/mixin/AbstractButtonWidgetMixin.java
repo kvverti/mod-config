@@ -6,10 +6,10 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 
 import net.minecraft.client.gui.DrawableHelper;
-import net.minecraft.client.gui.widget.AbstractButtonWidget;
+import net.minecraft.client.gui.widget.ClickableWidget;
 
-@Mixin(AbstractButtonWidget.class)
-public abstract class AbstractButonWidgetMixin extends DrawableHelper implements ClearFocus {
+@Mixin(ClickableWidget.class)
+public abstract class AbstractButtonWidgetMixin extends DrawableHelper implements ClearFocus {
 
     @Shadow
     protected abstract void onFocusedChanged(boolean bl);

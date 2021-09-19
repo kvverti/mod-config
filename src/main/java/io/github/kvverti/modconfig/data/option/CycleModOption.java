@@ -5,7 +5,7 @@ import java.util.List;
 import io.github.kvverti.modconfig.data.facade.CycleOptionFacade;
 
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.widget.AbstractButtonWidget;
+import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.text.Text;
 
@@ -26,7 +26,7 @@ public class CycleModOption<T> extends ModOption<T> {
     }
 
     @Override
-    public AbstractButtonWidget createWidget(Screen containing, int width, int height) {
+    public ClickableWidget createWidget(Screen containing, int width, int height) {
         return new ButtonWidget(
             0, 0, width, height, this.getMergedMessageText(),
             btn -> {

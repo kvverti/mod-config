@@ -1,21 +1,24 @@
 package io.github.kvverti.modconfig.data;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
+import com.terraformersmc.modmenu.api.ModMenuApi;
+import com.terraformersmc.modmenu.util.ModMenuApiMarker;
 import io.github.kvverti.modconfig.data.facade.ConfigFacade;
 import io.github.kvverti.modconfig.data.facade.NestedScreenOptionFacade;
 import io.github.kvverti.modconfig.data.facade.OptionFacade;
 import io.github.kvverti.modconfig.data.option.ModOption;
 import io.github.kvverti.modconfig.data.option.NestedScreenModOption;
 import io.github.prospector.modmenu.api.ConfigScreenFactory;
-import io.github.prospector.modmenu.api.ModMenuApi;
 
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.ModContainer;
@@ -51,19 +54,35 @@ public class SearchableOptions {
         mods.clear();
         options.clear();
         saveCallbacks.clear();
-        List<EntrypointContainer<ModMenuApi>> modMenuMods = FabricLoader.getInstance().getEntrypointContainers("modmenu", ModMenuApi.class);
-        for(EntrypointContainer<ModMenuApi> container : modMenuMods) {
+        List<EntrypointContainer<ModMenuApiMarker>> modMenuMods = FabricLoader.getInstance().getEntrypointContainers("modmenu", ModMenuApiMarker.class);
+        for(EntrypointContainer<ModMenuApiMarker> container : modMenuMods) {
+            var entrypoint = container.getEntrypoint();
             {
-                ConfigScreenFactory<?> factory = container.getEntrypoint().getModConfigScreenFactory();
+                ScreenFactory factory;
+                if(entrypoint instanceof ModMenuApi api) {
+                    factory = api.getModConfigScreenFactory()::create;
+                } else if(entrypoint instanceof io.github.prospector.modmenu.api.ModMenuApi api) {
+                    factory = api.getModConfigScreenFactory()::create;
+                } else {
+                    factory = screen -> null;
+                }
                 Screen screen = factory.create(null);
                 if(screen != null) {
                     String modName = container.getProvider().getMetadata().getName();
                     Text name = new LiteralText(modName);
-                    mods.add(new NestedScreenModOption(name, name, NestedScreenOptionFacade.makeFacade(name, factory::create)));
+                    mods.add(new NestedScreenModOption(name, name, NestedScreenOptionFacade.makeFacade(name, factory)));
                     scrapeOptions(name, screen);
                 }
             }
-            for(Map.Entry<String, ConfigScreenFactory<?>> entry : container.getEntrypoint().getProvidedConfigScreenFactories().entrySet()) {
+            Set<? extends Map.Entry<String, ? extends ConfigScreenFactory<?>>> entries;
+            if(entrypoint instanceof ModMenuApi api) {
+                entries = api.getProvidedConfigScreenFactories().entrySet();
+            } else if(entrypoint instanceof io.github.prospector.modmenu.api.ModMenuApi api) {
+                entries = api.getProvidedConfigScreenFactories().entrySet();
+            } else {
+                entries = Collections.emptySet();
+            }
+            for(Map.Entry<String, ? extends ConfigScreenFactory<?>> entry : entries) {
                 String modId = entry.getKey();
                 Optional<ModContainer> mod = FabricLoader.getInstance().getModContainer(modId);
                 Screen screen = entry.getValue().create(null);
@@ -77,8 +96,7 @@ public class SearchableOptions {
     }
 
     private void scrapeOptions(Text modName, Screen screen) {
-        if(screen instanceof ConfigFacade) {
-            ConfigFacade facade = (ConfigFacade)screen;
+        if(screen instanceof ConfigFacade facade) {
             saveCallbacks.add(facade.modcfg_persistCallback());
             Map<Text, List<OptionFacade<?>>> widgetsByCategory = facade.modcfg_getOptionsByCategory();
             for(Map.Entry<Text, List<OptionFacade<?>>> entry : widgetsByCategory.entrySet()) {

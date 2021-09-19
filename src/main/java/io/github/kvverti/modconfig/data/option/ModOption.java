@@ -8,7 +8,7 @@ import io.github.kvverti.modconfig.data.facade.OptionFacade;
 
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.widget.AbstractButtonWidget;
+import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.MutableText;
@@ -61,7 +61,7 @@ public abstract class ModOption<T> {
      */
     public abstract boolean isStoredOptionValid();
 
-    public abstract AbstractButtonWidget createWidget(Screen containing, int width, int height);
+    public abstract ClickableWidget createWidget(Screen containing, int width, int height);
 
     /**
      * True if the option should take up an entire row, false if the option should take up only half a row.

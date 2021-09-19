@@ -10,6 +10,7 @@ import javax.annotation.Nullable;
 import io.github.kvverti.modconfig.data.facade.DropdownFacade;
 import me.shedaniel.clothconfig2.gui.entries.DropdownBoxEntry;
 import me.shedaniel.clothconfig2.gui.entries.TooltipListEntry;
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 
@@ -18,11 +19,12 @@ import net.minecraft.text.Text;
 @Mixin(DropdownBoxEntry.class)
 public abstract class DropdownBoxEntryMixin<T> extends TooltipListEntry<T> implements DropdownFacade<T> {
 
-    @Shadow
+    @Final
+    @Shadow(remap = false)
     @Nullable
     private Consumer<T> saveConsumer;
 
-    @Shadow
+    @Shadow(remap = false)
     protected DropdownBoxEntry.SelectionElement<T> selectionElement;
 
     private DropdownBoxEntryMixin(Text fieldName, Supplier<Optional<Text[]>> tooltipSupplier) {

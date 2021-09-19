@@ -5,7 +5,7 @@ import javax.annotation.Nullable;
 import io.github.kvverti.modconfig.data.option.widget.OverlayRenderable;
 import io.github.kvverti.modconfig.iface.ClearFocus;
 
-import net.minecraft.client.gui.widget.AbstractButtonWidget;
+import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.client.util.math.MatrixStack;
 
 /**
@@ -13,14 +13,14 @@ import net.minecraft.client.util.math.MatrixStack;
  */
 class SettingsModOptionsEntry extends ModOptionsEntry {
 
-    private final AbstractButtonWidget button1;
+    private final ClickableWidget button1;
     @Nullable
-    private final AbstractButtonWidget button2;
+    private final ClickableWidget button2;
     private final boolean rtl;
     @Nullable
-    private AbstractButtonWidget focused;
+    private ClickableWidget focused;
 
-    SettingsModOptionsEntry(AbstractButtonWidget button1, @Nullable AbstractButtonWidget button2, boolean rtl) {
+    SettingsModOptionsEntry(ClickableWidget button1, @Nullable ClickableWidget button2, boolean rtl) {
         this.button1 = button1;
         this.button2 = button2;
         this.rtl = rtl;

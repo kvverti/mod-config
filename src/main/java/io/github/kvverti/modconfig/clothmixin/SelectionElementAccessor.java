@@ -7,6 +7,6 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 @Mixin(DropdownBoxEntry.SelectionElement.class)
 public interface SelectionElementAccessor<R> {
 
-    @Accessor
+    @Accessor(remap = false)
     DropdownBoxEntry.DropdownMenuElement<R> getMenu();
 }

@@ -6,6 +6,7 @@ import java.util.function.Function;
 import io.github.kvverti.modconfig.data.facade.IntOptionFacade;
 import me.shedaniel.clothconfig2.gui.entries.IntegerSliderEntry;
 import me.shedaniel.clothconfig2.gui.entries.TooltipListEntry;
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 
@@ -14,19 +15,20 @@ import net.minecraft.text.Text;
 @Mixin(IntegerSliderEntry.class)
 public abstract class IntegerSliderEntryMixin extends TooltipListEntry<Integer> implements IntOptionFacade {
 
-    @Shadow
+    @Shadow(remap = false)
     private int minimum;
 
-    @Shadow
+    @Shadow(remap = false)
     private int maximum;
 
-    @Shadow
+    @Final
+    @Shadow(remap = false)
     private Consumer<Integer> saveConsumer;
 
-    @Shadow
+    @Shadow(remap = false)
     private Function<Integer, Text> textGetter;
 
-    @Shadow
+    @Shadow(remap = false)
     public abstract Integer getValue();
 
     private IntegerSliderEntryMixin() {

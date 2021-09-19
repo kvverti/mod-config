@@ -5,7 +5,7 @@ import org.lwjgl.glfw.GLFW;
 
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.widget.AbstractButtonWidget;
+import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.client.gui.widget.SliderWidget;
 import net.minecraft.text.Text;
 
@@ -26,7 +26,7 @@ public class IntModOption extends ModOption<Long> {
     }
 
     @Override
-    public AbstractButtonWidget createWidget(Screen containing, int width, int height) {
+    public ClickableWidget createWidget(Screen containing, int width, int height) {
         boolean rtl = MinecraftClient.getInstance().textRenderer.isRightToLeft();
         double initialValue = (double)(this.getState() - min) / (max - min);
         if(rtl) {

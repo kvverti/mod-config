@@ -25,7 +25,7 @@ public abstract class TitleAndPauseScreenMixin extends Screen {
         index = 0,
         at = @At(
             value = "INVOKE",
-            target = "Lnet/minecraft/client/MinecraftClient;openScreen(Lnet/minecraft/client/gui/screen/Screen;)V"
+            target = "Lnet/minecraft/client/MinecraftClient;setScreen(Lnet/minecraft/client/gui/screen/Screen;)V"
         )
     )
     private Screen replaceOptionsWithModConfigOptionsScreen(Screen screen) {

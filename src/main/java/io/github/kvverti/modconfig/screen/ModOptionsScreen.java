@@ -2,6 +2,7 @@ package io.github.kvverti.modconfig.screen;
 
 import org.lwjgl.glfw.GLFW;
 
+import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
@@ -41,7 +42,7 @@ public class ModOptionsScreen extends Screen {
     protected void init() {
         super.init();
         this.entries = new ModOptionsEntryList(this, this.client, this.width, this.height, LIST_AREA_TOP_OFFSET, this.height - LIST_AREA_BOTTOM_OFFSET, STANDARD_HEIGHT + PADDING_H);
-        TextFieldWidget searchField = this.addButton(new TextFieldWidget(
+        TextFieldWidget searchField = this.addDrawableChild(new TextFieldWidget(
             this.textRenderer,
             (this.width / 2) - (ROW_WIDTH / 2),
             20,
@@ -54,7 +55,7 @@ public class ModOptionsScreen extends Screen {
         });
         searchField.setText(searchText);
         this.entries.setScrollAmount(scrollPos);
-        this.addButton(new ButtonWidget(
+        this.addDrawableChild(new ButtonWidget(
             searchField.x + SEARCH_FIELD_WIDTH + PADDING_H,
             20,
             TOP_BUTTON_WIDTH,
@@ -63,8 +64,8 @@ public class ModOptionsScreen extends Screen {
             btn -> {
             }
         ));
-        this.addChild(this.entries);
-        this.addButton(new ButtonWidget(
+        this.addSelectableChild(this.entries);
+        this.addDrawableChild(new ButtonWidget(
             (this.width / 2) - (DONE_BUTTON_WIDTH / 2),
             this.height - 26,
             DONE_BUTTON_WIDTH,
@@ -90,7 +91,7 @@ public class ModOptionsScreen extends Screen {
     public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
         this.renderBackground(matrices);
         entries.render(matrices, mouseX, mouseY, delta);
-        this.drawCenteredText(matrices, this.textRenderer, new TranslatableText("modconfig.title"), this.width / 2, 10, 0xffffff);
+        drawCenteredText(matrices, this.textRenderer, new TranslatableText("modconfig.title"), this.width / 2, 10, 0xffffff);
         super.render(matrices, mouseX, mouseY, delta);
     }
 
@@ -112,6 +113,6 @@ public class ModOptionsScreen extends Screen {
     @Override
     public void onClose() {
         entries.save();
-        this.client.openScreen(this.parent);
+        this.client.setScreen(this.parent);
     }
 }

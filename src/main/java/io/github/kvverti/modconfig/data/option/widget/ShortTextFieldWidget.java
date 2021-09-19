@@ -4,7 +4,8 @@ import io.github.kvverti.modconfig.iface.ClearFocus;
 import io.github.kvverti.modconfig.screen.ModOptionsScreen;
 
 import net.minecraft.client.font.TextRenderer;
-import net.minecraft.client.gui.widget.AbstractButtonWidget;
+import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
+import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.util.math.MatrixStack;
 
@@ -12,7 +13,7 @@ import net.minecraft.client.util.math.MatrixStack;
  * A half-width text field widget, for text field based integers, etc. where the input is expected to be
  * only a few characters.`
  */
-public class ShortTextFieldWidget extends AbstractButtonWidget implements ClearFocus {
+public class ShortTextFieldWidget extends ClickableWidget implements ClearFocus {
 
     private final TextRenderer textRenderer;
     private final TextFieldWidget textField;
@@ -79,5 +80,10 @@ public class ShortTextFieldWidget extends AbstractButtonWidget implements ClearF
             return ret;
         }
         return false;
+    }
+
+    @Override
+    public void appendNarrations(NarrationMessageBuilder builder) {
+        // todo
     }
 }

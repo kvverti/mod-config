@@ -9,7 +9,7 @@ import io.github.kvverti.modconfig.data.option.widget.DropdownWidget;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.widget.AbstractButtonWidget;
+import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.text.Text;
 
 public class DropdownModOption<T> extends ModOption<T> {
@@ -34,7 +34,7 @@ public class DropdownModOption<T> extends ModOption<T> {
     }
 
     @Override
-    public AbstractButtonWidget createWidget(Screen containing, int width, int height) {
+    public ClickableWidget createWidget(Screen containing, int width, int height) {
         TextRenderer textRenderer = MinecraftClient.getInstance().textRenderer;
         return new DropdownWidget<>(
             textRenderer,

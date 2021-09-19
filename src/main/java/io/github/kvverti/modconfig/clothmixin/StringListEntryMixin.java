@@ -6,6 +6,7 @@ import java.util.function.Predicate;
 import io.github.kvverti.modconfig.data.facade.TextFieldOptionFacade;
 import me.shedaniel.clothconfig2.gui.entries.StringListEntry;
 import me.shedaniel.clothconfig2.gui.entries.TextFieldListEntry;
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 
@@ -14,10 +15,11 @@ import net.minecraft.text.Text;
 @Mixin(StringListEntry.class)
 public abstract class StringListEntryMixin extends TextFieldListEntry<String> implements TextFieldOptionFacade {
 
-    @Shadow
+    @Shadow(remap = false)
     public abstract String getValue();
 
-    @Shadow
+    @Final
+    @Shadow(remap = false)
     private Consumer<String> saveConsumer;
 
     private StringListEntryMixin() {

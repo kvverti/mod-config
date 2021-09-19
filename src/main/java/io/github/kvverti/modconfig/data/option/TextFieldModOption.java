@@ -8,7 +8,7 @@ import io.github.kvverti.modconfig.data.option.widget.ShortTextFieldWidget;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.widget.AbstractButtonWidget;
+import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.text.Text;
 
@@ -33,7 +33,7 @@ public class TextFieldModOption extends ModOption<String> {
     }
 
     @Override
-    public AbstractButtonWidget createWidget(Screen containing, int width, int height) {
+    public ClickableWidget createWidget(Screen containing, int width, int height) {
         TextRenderer textRenderer = MinecraftClient.getInstance().textRenderer;
         TextFieldWidget widget = new TextFieldWidget(textRenderer, 0, 0, width, height, this.getOptionName());
         widget.setMaxLength(maxLength);

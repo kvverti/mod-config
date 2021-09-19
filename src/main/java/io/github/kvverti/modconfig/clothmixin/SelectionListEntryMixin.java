@@ -8,6 +8,7 @@ import com.google.common.collect.ImmutableList;
 import io.github.kvverti.modconfig.data.facade.CycleOptionFacade;
 import me.shedaniel.clothconfig2.gui.entries.SelectionListEntry;
 import me.shedaniel.clothconfig2.gui.entries.TooltipListEntry;
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 
@@ -16,13 +17,16 @@ import net.minecraft.text.Text;
 @Mixin(SelectionListEntry.class)
 public abstract class SelectionListEntryMixin<T> extends TooltipListEntry<T> implements CycleOptionFacade<T> {
 
-    @Shadow
+    @Final
+    @Shadow(remap = false)
     private ImmutableList<T> values;
 
-    @Shadow
+    @Final
+    @Shadow(remap = false)
     private Function<T, Text> nameProvider;
 
-    @Shadow
+    @Final
+    @Shadow(remap = false)
     private Consumer<T> saveConsumer;
 
     private SelectionListEntryMixin() {

@@ -6,6 +6,7 @@ import java.util.function.Predicate;
 import io.github.kvverti.modconfig.data.facade.TextFieldOptionFacade;
 import me.shedaniel.clothconfig2.gui.entries.DoubleListEntry;
 import me.shedaniel.clothconfig2.gui.entries.TextFieldListEntry;
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 
@@ -14,16 +15,17 @@ import net.minecraft.text.Text;
 @Mixin(DoubleListEntry.class)
 public abstract class DoubleListEntryMixin extends TextFieldListEntry<Double> implements TextFieldOptionFacade {
 
-    @Shadow
+    @Shadow(remap = false)
     private double minimum;
 
-    @Shadow
+    @Shadow(remap = false)
     private double maximum;
 
-    @Shadow
+    @Final
+    @Shadow(remap = false)
     private Consumer<Double> saveConsumer;
 
-    @Shadow
+    @Shadow(remap = false)
     public abstract Double getValue();
 
     private DoubleListEntryMixin() {

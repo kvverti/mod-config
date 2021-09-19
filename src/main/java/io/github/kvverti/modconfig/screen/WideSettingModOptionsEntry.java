@@ -5,7 +5,7 @@ import io.github.kvverti.modconfig.iface.ClearFocus;
 
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
-import net.minecraft.client.gui.widget.AbstractButtonWidget;
+import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
 
@@ -15,10 +15,10 @@ import net.minecraft.text.Text;
 public class WideSettingModOptionsEntry extends ModOptionsEntry {
 
     private final Text label;
-    private final AbstractButtonWidget widget;
+    private final ClickableWidget widget;
     private final boolean rtl;
 
-    public WideSettingModOptionsEntry(Text label, AbstractButtonWidget widget, boolean rtl) {
+    public WideSettingModOptionsEntry(Text label, ClickableWidget widget, boolean rtl) {
         this.label = label;
         this.widget = widget;
         this.rtl = rtl;

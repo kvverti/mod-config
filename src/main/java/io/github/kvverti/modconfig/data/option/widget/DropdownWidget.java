@@ -15,8 +15,10 @@ import org.lwjgl.glfw.GLFW;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawableHelper;
-import net.minecraft.client.gui.widget.AbstractButtonWidget;
+import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
+import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.client.gui.widget.ButtonWidget;
+import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.LiteralText;
@@ -25,7 +27,7 @@ import net.minecraft.text.Text;
 /**
  * A searchable dropdown widget.
  */
-public class DropdownWidget<T> extends AbstractButtonWidget implements OverlayRenderable, ClearFocus {
+public class DropdownWidget<T> extends ClickableWidget implements OverlayRenderable, ClearFocus {
 
     /**
      * Horizontal padding between elements.
@@ -37,7 +39,7 @@ public class DropdownWidget<T> extends AbstractButtonWidget implements OverlayRe
     private final ButtonWidget dropdownButton;
     private final DropdownListWidget dropdown;
     @Nullable
-    private AbstractButtonWidget focused;
+    private ClickableWidget focused;
     private boolean dropdownOpenUp;
 
     public DropdownWidget(TextRenderer textRenderer, List<T> selections, Function<T, Text> nameProvider, int x, int y, int width, int height, Text title, T value, Consumer<T> saveHandler) {
@@ -229,10 +231,15 @@ public class DropdownWidget<T> extends AbstractButtonWidget implements OverlayRe
         return false;
     }
 
+    @Override
+    public void appendNarrations(NarrationMessageBuilder builder) {
+        // todo
+    }
+
     /**
      * The actual drop down menu widget.
      */
-    private class DropdownListWidget extends AbstractButtonWidget {
+    private class DropdownListWidget extends ClickableWidget {
 
         private static final int SCROLL_BAR_WIDTH = 5;
         private static final int SCROLL_BAR_PADDING = 4;
@@ -435,6 +442,11 @@ public class DropdownWidget<T> extends AbstractButtonWidget implements OverlayRe
                 scrollIdx = scrollToIdx;
             }
             return true;
+        }
+
+        @Override
+        public void appendNarrations(NarrationMessageBuilder builder) {
+            // todo
         }
     }
 }
