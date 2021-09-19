@@ -1,29 +1,24 @@
 package io.github.kvverti.modconfig.data;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
-import com.terraformersmc.modmenu.api.ModMenuApi;
-import com.terraformersmc.modmenu.util.ModMenuApiMarker;
+import io.github.kvverti.modconfig.api.ModConfigProvider;
 import io.github.kvverti.modconfig.data.facade.ConfigFacade;
 import io.github.kvverti.modconfig.data.facade.NestedScreenOptionFacade;
 import io.github.kvverti.modconfig.data.facade.OptionFacade;
 import io.github.kvverti.modconfig.data.option.ModOption;
 import io.github.kvverti.modconfig.data.option.NestedScreenModOption;
-import io.github.prospector.modmenu.api.ConfigScreenFactory;
 
 import net.fabricmc.loader.api.FabricLoader;
-import net.fabricmc.loader.api.ModContainer;
 import net.fabricmc.loader.api.entrypoint.EntrypointContainer;
-import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.screen.option.OptionsScreen;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 
@@ -54,56 +49,40 @@ public class SearchableOptions {
         mods.clear();
         options.clear();
         saveCallbacks.clear();
-        List<EntrypointContainer<ModMenuApiMarker>> modMenuMods = FabricLoader.getInstance().getEntrypointContainers("modmenu", ModMenuApiMarker.class);
-        for(EntrypointContainer<ModMenuApiMarker> container : modMenuMods) {
-            var entrypoint = container.getEntrypoint();
-            {
-                ScreenFactory factory;
-                if(entrypoint instanceof ModMenuApi api) {
-                    factory = api.getModConfigScreenFactory()::create;
-                } else if(entrypoint instanceof io.github.prospector.modmenu.api.ModMenuApi api) {
-                    factory = api.getModConfigScreenFactory()::create;
-                } else {
-                    factory = screen -> null;
+
+        // add vanilla Minecraft config
+        var vanillaName = new LiteralText("Minecraft");
+        ScreenFactory vanillaFactory = parent -> new OptionsScreen(parent, MinecraftClient.getInstance().options);
+        mods.add(new NestedScreenModOption(vanillaName, vanillaName, NestedScreenOptionFacade.makeFacade(vanillaName, vanillaFactory)));
+
+        // add modmenu mod configs
+        List<EntrypointContainer<Object>> modMenuMods = FabricLoader.getInstance().getEntrypointContainers("modmenu", Object.class);
+        for(EntrypointContainer<Object> container : modMenuMods) {
+            if(container.getEntrypoint() instanceof ModConfigProvider provider) {
+                var config = provider.getModConfig();
+                var factory = provider.getModConfigScreenProvider();
+                var screen = factory.create(null);
+                var name = new LiteralText(container.getProvider().getMetadata().getName());
+                if(config != null) {
+                    scrapeOptions(name, config);
+                    if(screen == null) {
+                        // todo: construct a screen
+                    }
                 }
-                Screen screen = factory.create(null);
                 if(screen != null) {
-                    String modName = container.getProvider().getMetadata().getName();
-                    Text name = new LiteralText(modName);
                     mods.add(new NestedScreenModOption(name, name, NestedScreenOptionFacade.makeFacade(name, factory)));
-                    scrapeOptions(name, screen);
-                }
-            }
-            Set<? extends Map.Entry<String, ? extends ConfigScreenFactory<?>>> entries;
-            if(entrypoint instanceof ModMenuApi api) {
-                entries = api.getProvidedConfigScreenFactories().entrySet();
-            } else if(entrypoint instanceof io.github.prospector.modmenu.api.ModMenuApi api) {
-                entries = api.getProvidedConfigScreenFactories().entrySet();
-            } else {
-                entries = Collections.emptySet();
-            }
-            for(Map.Entry<String, ? extends ConfigScreenFactory<?>> entry : entries) {
-                String modId = entry.getKey();
-                Optional<ModContainer> mod = FabricLoader.getInstance().getModContainer(modId);
-                Screen screen = entry.getValue().create(null);
-                if(mod.isPresent() && screen != null) {
-                    Text name = new LiteralText(mod.get().getMetadata().getName());
-                    mods.add(new NestedScreenModOption(name, name, NestedScreenOptionFacade.makeFacade(name, entry.getValue()::create)));
-                    scrapeOptions(name, screen);
                 }
             }
         }
     }
 
-    private void scrapeOptions(Text modName, Screen screen) {
-        if(screen instanceof ConfigFacade facade) {
-            saveCallbacks.add(facade.modcfg_persistCallback());
-            Map<Text, List<OptionFacade<?>>> widgetsByCategory = facade.modcfg_getOptionsByCategory();
-            for(Map.Entry<Text, List<OptionFacade<?>>> entry : widgetsByCategory.entrySet()) {
-                Text categoryName = entry.getKey();
-                for(OptionFacade<?> configEntry : entry.getValue()) {
-                    options.add(configEntry.modcfg_createOption(modName, categoryName));
-                }
+    private void scrapeOptions(Text modName, ConfigFacade facade) {
+        saveCallbacks.add(facade.modcfg_persistCallback());
+        Map<Text, List<OptionFacade<?>>> widgetsByCategory = facade.modcfg_getOptionsByCategory();
+        for(Map.Entry<Text, List<OptionFacade<?>>> entry : widgetsByCategory.entrySet()) {
+            Text categoryName = entry.getKey();
+            for(OptionFacade<?> configEntry : entry.getValue()) {
+                options.add(configEntry.modcfg_createOption(modName, categoryName));
             }
         }
     }

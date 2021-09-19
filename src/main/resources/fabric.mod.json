@@ -24,7 +24,8 @@
   },
   "mixins": [
     "modconfig.mixins.json",
-    "modconfig.cloth.mixins.json"
+    "modconfig.cloth.mixins.json",
+    "modconfig.modmenu.mixins.json"
   ],
 
   "depends": {
